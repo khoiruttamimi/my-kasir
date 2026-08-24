@@ -1,0 +1,21 @@
+# Dependency & build artifacts
+node_modules
+.next
+dist
+build
+
+# Env & config
+.env
+.env.local
+.env.development
+.env.production
+
+# Package manager lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+coverage
+*.log
+.DS_Store
