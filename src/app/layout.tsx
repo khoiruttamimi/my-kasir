@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Quicksand } from 'next/font/google';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider } from 'antd';
+import QueryProvider from '@/providers/query-provider';
 
 const quickSand = Quicksand({ subsets: ['latin'] });
 
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               },
             }}
           >
-            {children}
+            <QueryProvider>{children}</QueryProvider>
           </ConfigProvider>
         </AntdRegistry>
       </body>

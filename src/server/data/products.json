@@ -1,0 +1,137 @@
+[
+  {
+    "id": "1",
+    "name": "Indomie Goreng",
+    "category": "Makanan",
+    "price": 3500,
+    "stock": 20,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "name": "Aqua 600ml",
+    "category": "Minuman",
+    "price": 4000,
+    "stock": 15,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "name": "Teh Kotak",
+    "category": "Minuman",
+    "price": 3500,
+    "stock": 24,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "name": "Roti Cokelat",
+    "category": "Makanan",
+    "price": 6000,
+    "stock": 18,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "5",
+    "name": "Biskuit Roma",
+    "category": "Makanan",
+    "price": 8500,
+    "stock": 12,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "6",
+    "name": "Kopi Sachet",
+    "category": "Minuman",
+    "price": 2500,
+    "stock": 30,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "7",
+    "name": "Susu UHT 1L",
+    "category": "Minuman",
+    "price": 18000,
+    "stock": 10,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "8",
+    "name": "Keripik Singkong",
+    "category": "Makanan",
+    "price": 7000,
+    "stock": 16,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "9",
+    "name": "Permen Mint",
+    "category": "Makanan",
+    "price": 3000,
+    "stock": 40,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "10",
+    "name": "Air Mineral 1.5L",
+    "category": "Minuman",
+    "price": 6000,
+    "stock": 20,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "11",
+    "name": "Sarden Kaleng",
+    "category": "Makanan",
+    "price": 14000,
+    "stock": 8,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "12",
+    "name": "Kecap Manis",
+    "category": "Bumbu",
+    "price": 12000,
+    "stock": 14,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "13",
+    "name": "Minyak Goreng 1L",
+    "category": "Kebutuhan Pokok",
+    "price": 17000,
+    "stock": 11,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "14",
+    "name": "Gula Pasir 1kg",
+    "category": "Kebutuhan Pokok",
+    "price": 16000,
+    "stock": 9,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "15",
+    "name": "Sabun Mandi",
+    "category": "Perawatan",
+    "price": 5000,
+    "stock": 22,
+    "createdAt": "2026-09-07T00:00:00.000Z",
+    "updatedAt": "2026-09-07T00:00:00.000Z"
+  }
+]

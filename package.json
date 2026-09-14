@@ -12,11 +12,13 @@
     "@ant-design/icons": "5.x",
     "@ant-design/nextjs-registry": "^1.1.0",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@tanstack/react-query": "^5.102.8",
     "antd": "^5.27.3",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "sass": "^1.92.0"
+    "sass": "^1.92.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -29,6 +31,5 @@
     "prettier": "^3.6.2",
     "typescript": "^5",
     "typescript-eslint": "^8.42.0"
-  },
-  "packageManager": "pnpm@10.2.1+sha512.398035c7bd696d0ba0b10a688ed558285329d27ea994804a52bad9167d8e3a72bcb993f9699585d3ca25779ac64949ef422757a6c31102c12ab932e5cbe5cc92"
+  }
 }
