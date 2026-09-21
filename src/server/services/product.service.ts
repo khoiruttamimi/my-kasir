@@ -22,12 +22,13 @@ export interface GetProductsParams {
 
 export async function getProducts({ page = 1, limit = 10, search = '' }: GetProductsParams = {}) {
   const products = await getData();
+  const sortedProducts = products.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const normalizedSearch = search.trim().toLowerCase();
 
   const filteredProducts = normalizedSearch
-    ? products.filter((product) => product.name.toLowerCase().includes(normalizedSearch))
-    : products;
+    ? sortedProducts.filter((product) => product.name.toLowerCase().includes(normalizedSearch))
+    : sortedProducts;
 
   return paginate(filteredProducts, { page, limit });
 }
@@ -38,7 +39,15 @@ export async function getProductById(id: string) {
   return products.find((product) => product.id === id) ?? null;
 }
 
-export async function createProduct(payload: Pick<Product, 'name' | 'price' | 'stock'>) {
+export async function createProduct(payload: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
+  if (!payload.name.trim()) {
+    throw new Error('Product name is required');
+  }
+
+  if (payload.price < 0) {
+    throw new Error('Price cannot be negative');
+  }
+
   const products = await getData();
 
   const now = new Date().toISOString();
@@ -46,6 +55,7 @@ export async function createProduct(payload: Pick<Product, 'name' | 'price' | 's
   const product: Product = {
     id: crypto.randomUUID(),
     name: payload.name,
+    category: payload.category,
     price: payload.price,
     stock: payload.stock,
     createdAt: now,
@@ -59,7 +69,7 @@ export async function createProduct(payload: Pick<Product, 'name' | 'price' | 's
   return product;
 }
 
-export async function updateProduct(id: string, payload: Partial<Pick<Product, 'name' | 'price' | 'stock'>>) {
+export async function updateProduct(id: string, payload: Partial<Product>) {
   const products = await getData();
 
   const index = products.findIndex((product) => product.id === id);

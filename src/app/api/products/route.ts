@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { createProduct, deleteProduct, getProducts, updateProduct } from '@/server/services/product.service';
+import { createProduct, getProducts } from '@/server/services/product.service';
+import { withAuth } from '@/server/auth/with-auth';
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request) => {
   const { searchParams } = request.nextUrl;
 
   const page = Number(searchParams.get('page') ?? 1);
@@ -12,13 +13,14 @@ export async function GET(request: NextRequest) {
   const products = await getProducts({ page, limit, search });
 
   return NextResponse.json(products);
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request) => {
   const body = await request.json();
 
   const product = await createProduct({
     name: body.name,
+    category: body.category,
     price: body.price,
     stock: body.stock,
   });
@@ -26,59 +28,4 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(product, {
     status: 201,
   });
-}
-
-export async function PUT(request: NextRequest) {
-  const body = await request.json();
-
-  const product = await updateProduct(body.id, {
-    name: body.name,
-    price: body.price,
-    stock: body.stock,
-  });
-
-  if (!product) {
-    return NextResponse.json(
-      {
-        message: 'Product not found',
-      },
-      {
-        status: 404,
-      },
-    );
-  }
-
-  return NextResponse.json(product);
-}
-
-export async function DELETE(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-
-  const id = searchParams.get('id');
-
-  if (!id) {
-    return NextResponse.json(
-      {
-        message: 'Product id is required',
-      },
-      {
-        status: 400,
-      },
-    );
-  }
-
-  const product = await deleteProduct(id);
-
-  if (!product) {
-    return NextResponse.json(
-      {
-        message: 'Product not found',
-      },
-      {
-        status: 404,
-      },
-    );
-  }
-
-  return NextResponse.json(product);
-}
+});

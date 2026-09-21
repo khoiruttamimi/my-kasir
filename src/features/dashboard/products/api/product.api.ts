@@ -1,7 +1,8 @@
 import type { Product } from '@/models/product';
 import { BaseParams, BaseResponse } from '@/types/base';
+import { fetcher } from '@/utils/api';
 
-export async function getProducts(params: BaseParams): Promise<BaseResponse<Product[]>> {
+export function getProducts(params: BaseParams): Promise<BaseResponse<Product[]>> {
   const searchParams = new URLSearchParams();
 
   if (params.page) {
@@ -16,11 +17,31 @@ export async function getProducts(params: BaseParams): Promise<BaseResponse<Prod
     searchParams.set('search', params.search);
   }
 
-  const response = await fetch(`/api/products?${searchParams.toString()}`);
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch products');
-  }
-
-  return response.json();
+  return fetcher(`/api/products?${searchParams.toString()}`);
 }
+
+export const createProduct = (payload: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
+  return fetcher('/api/products', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+};
+
+export const updateProduct = ({ id, ...payload }: Product) => {
+  return fetcher(`/api/products/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+};
+
+export const deleteProduct = (id: string) => {
+  return fetcher(`/api/products/${id}`, {
+    method: 'DELETE',
+  });
+};

@@ -1,0 +1,26 @@
+.authWrapper {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  padding: 48px;
+  padding-right: 10%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+
+    background: url('/images/login-bg.png') center / cover no-repeat;
+    filter: blur(4px) brightness(0.9);
+
+    z-index: -1;
+  }
+}
+
+.authCard {
+  width: 420px;
+}

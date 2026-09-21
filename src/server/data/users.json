@@ -1,0 +1,9 @@
+[
+  {
+    "id": "1",
+    "name": "Admin",
+    "email": "admin@mykasir.com",
+    "password": "$2b$10$M0Fr5LC7LifM2SmUNgOH7ekWLMqLCpDny72kMMZIMSvQFSKlSiVS6",
+    "role": "admin"
+  }
+]

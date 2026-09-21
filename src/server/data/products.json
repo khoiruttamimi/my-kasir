@@ -27,15 +27,6 @@
     "updatedAt": "2026-09-07T00:00:00.000Z"
   },
   {
-    "id": "4",
-    "name": "Roti Cokelat",
-    "category": "Makanan",
-    "price": 6000,
-    "stock": 18,
-    "createdAt": "2026-09-07T00:00:00.000Z",
-    "updatedAt": "2026-09-07T00:00:00.000Z"
-  },
-  {
     "id": "5",
     "name": "Biskuit Roma",
     "category": "Makanan",
@@ -77,15 +68,6 @@
     "category": "Makanan",
     "price": 3000,
     "stock": 40,
-    "createdAt": "2026-09-07T00:00:00.000Z",
-    "updatedAt": "2026-09-07T00:00:00.000Z"
-  },
-  {
-    "id": "10",
-    "name": "Air Mineral 1.5L",
-    "category": "Minuman",
-    "price": 6000,
-    "stock": 20,
     "createdAt": "2026-09-07T00:00:00.000Z",
     "updatedAt": "2026-09-07T00:00:00.000Z"
   },
@@ -133,5 +115,23 @@
     "stock": 22,
     "createdAt": "2026-09-07T00:00:00.000Z",
     "updatedAt": "2026-09-07T00:00:00.000Z"
+  },
+  {
+    "id": "039ed3f1-bcfa-41be-8fd7-b73404ee7225",
+    "name": "Seblak",
+    "price": "23000",
+    "stock": "20",
+    "createdAt": "2026-09-14T06:39:53.413Z",
+    "updatedAt": "2026-09-14T07:53:43.032Z",
+    "category": "Makanan"
+  },
+  {
+    "id": "b10ca8c1-4277-4ac3-958d-ced72ccc06bb",
+    "name": "Hydrococo",
+    "price": "7000",
+    "stock": "12",
+    "createdAt": "2026-09-14T06:46:24.594Z",
+    "updatedAt": "2026-09-14T07:52:46.015Z",
+    "category": "Minuman"
   }
 ]

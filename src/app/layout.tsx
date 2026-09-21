@@ -3,7 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Quicksand } from 'next/font/google';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { ConfigProvider } from 'antd';
+import { App, ConfigProvider } from 'antd';
 import QueryProvider from '@/providers/query-provider';
 
 const quickSand = Quicksand({ subsets: ['latin'] });
@@ -21,10 +21,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               components: {
                 Layout: { siderBg: '#89986D' },
                 Menu: { colorBgContainer: '#89986D' },
+                Button: {
+                  defaultShadow: 'none',
+                  primaryShadow: 'none',
+                  dangerShadow: 'none',
+                },
+                Form: {
+                  verticalLabelPadding: '0 0 4px',
+                  itemMarginBottom: 16,
+                },
               },
             }}
           >
-            <QueryProvider>{children}</QueryProvider>
+            <App>
+              <QueryProvider>{children}</QueryProvider>
+            </App>
           </ConfigProvider>
         </AntdRegistry>
       </body>
