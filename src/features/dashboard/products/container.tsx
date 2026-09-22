@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { Product } from '@/models/product';
 import { useRoleChecking } from '@/hooks/use-auth';
+import { formatRupiah } from '@/utils/format-money';
 
 export default function ProductsContainer() {
   const { modal, notification } = App.useApp();
@@ -76,7 +77,7 @@ export default function ProductsContainer() {
         columns={[
           { title: 'Name', dataIndex: 'name' },
           { title: 'Category', dataIndex: 'category' },
-          { title: 'Price', dataIndex: 'price' },
+          { title: 'Price', dataIndex: 'price', render: (price: number) => formatRupiah(price) },
           { title: 'Stock', dataIndex: 'stock' },
           {
             title: 'Action',
@@ -88,13 +89,15 @@ export default function ProductsContainer() {
                   shape="circle"
                   color="primary"
                   variant="outlined"
-                  icon={<EditFilled onClick={() => handleEdit(row)} />}
+                  icon={<EditFilled />}
+                  onClick={() => handleEdit(row)}
                 />
                 <Button
                   disabled={!isHaveAccess('admin')}
                   shape="circle"
                   danger
-                  icon={<DeleteFilled onClick={() => handleDelete(row)} />}
+                  icon={<DeleteFilled />}
+                  onClick={() => handleDelete(row)}
                 />
               </Space>
             ),

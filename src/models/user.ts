@@ -7,3 +7,5 @@ export type User = {
   password: string;
   role: UserRole;
 };
+
+export type UserResponse = Omit<User, 'password'>;

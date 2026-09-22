@@ -31,7 +31,7 @@ export const createProduct = (payload: Omit<Product, 'id' | 'createdAt' | 'updat
 };
 
 export const updateProduct = ({ id, ...payload }: Product) => {
-  return fetcher(`/api/products/${id}`, {
+  return fetcher(`/api/products/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export const updateProduct = ({ id, ...payload }: Product) => {
 };
 
 export const deleteProduct = (id: string) => {
-  return fetcher(`/api/products/${id}`, {
+  return fetcher(`/api/products/${encodeURIComponent(id)}`, {
     method: 'DELETE',
   });
 };

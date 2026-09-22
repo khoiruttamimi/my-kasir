@@ -30,6 +30,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   verticalLabelPadding: '0 0 4px',
                   itemMarginBottom: 16,
                 },
+                Typography: {
+                  fontSizeHeading1: 28,
+                  fontSizeHeading2: 24,
+                  fontSizeHeading3: 20,
+                  fontSizeHeading4: 16,
+                  fontSizeHeading5: 14,
+                  fontWeightStrong: 700,
+                },
               },
             }}
           >

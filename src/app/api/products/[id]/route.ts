@@ -2,34 +2,43 @@ import { NextResponse } from 'next/server';
 
 import { deleteProduct, getProductById, updateProduct } from '@/server/services/product.service';
 import { withAuth } from '@/server/auth/with-auth';
+import { apiResponse, readJsonBody } from '@/server/utils/api';
 
 type Context = {
   params: Promise<{ id: string }>;
 };
 
-export const GET = withAuth<Context>(async (_request, { params }) => {
-  const { id } = await params;
+export const GET = withAuth<Context>(async (_request, { params }) =>
+  apiResponse(async () => {
+    const { id } = await params;
 
-  const product = await getProductById(id);
+    const product = await getProductById(id);
 
-  if (!product) {
-    return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-  }
+    if (!product) {
+      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+    }
 
-  return NextResponse.json(product);
-});
+    return NextResponse.json(product);
+  }),
+);
 
-export const PUT = withAuth<Context>(async (request, { params }) => {
-  const { id } = await params;
-  const body = await request.json();
+export const PUT = withAuth<Context>(async (request, { params }) =>
+  apiResponse(async () => {
+    const { id } = await params;
+    const body = await readJsonBody(request);
 
-  const product = await updateProduct(id, body);
+    const product = await updateProduct(id, body);
 
-  return NextResponse.json({ data: product });
-});
+    if (!product) {
+      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+    }
 
-export const DELETE = withAuth<Context>(
-  async (_request, { params }) => {
+    return NextResponse.json({ data: product });
+  }),
+);
+
+export const DELETE = withAuth<Context>(async (_request, { params }) =>
+  apiResponse(async () => {
     const { id } = await params;
 
     if (!id) {
@@ -43,6 +52,5 @@ export const DELETE = withAuth<Context>(
     }
 
     return NextResponse.json(product);
-  },
-  { roles: ['cashier'] },
+  }),
 );

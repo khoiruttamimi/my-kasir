@@ -7,12 +7,14 @@ import {
   MenuUnfoldOutlined,
   ShoppingCartOutlined,
   ShoppingOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
-import { Button, Grid, Layout, Menu, theme } from 'antd';
+import { App, Avatar, Button, Dropdown, Grid, Layout, Menu, Space, theme } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRoleChecking } from '@/hooks/use-auth';
 import { getMenus } from './util';
+import { Text } from '../antd-wrapper';
 
 const { Header, Sider, Content } = Layout;
 const SIDER_WITH = 230;
@@ -22,6 +24,8 @@ const PADDING_CONTENT = 12;
 
 export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const [collapsed, setCollapsed] = useState(false);
+  const { data: session } = useSession();
+  const { modal } = App.useApp();
   const isHaveAccess = useRoleChecking();
 
   const router = useRouter();
@@ -31,9 +35,16 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const handleLogout = async () => {
-    await signOut({
-      redirectTo: '/auth/login',
+  const handleLogout = () => {
+    modal.confirm({
+      title: 'Logout',
+      content: 'Are you sure you want to logout?',
+      okText: 'Logout',
+      okButtonProps: { danger: true, icon: <LogoutOutlined /> },
+      cancelText: 'Cancel',
+      onOk: async () => {
+        await signOut({ redirectTo: '/auth/login' });
+      },
     });
   };
 
@@ -69,9 +80,31 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
             onClick={() => setCollapsed(!collapsed)}
             style={{ fontSize: 16, width: 64, height: '100%' }}
           />
-          <Button type="text" icon={<LogoutOutlined />} style={{ fontSize: 16, height: '100%' }} onClick={handleLogout}>
-            Logout
-          </Button>
+          <Space className="pr-16" size={14} align="center">
+            <div className="flex-column items-end">
+              <Text strong style={{ lineHeight: 1.2 }}>
+                {session?.user.name}
+              </Text>
+              <Text type="secondary" style={{ lineHeight: 1.2 }}>
+                {session?.user.role}
+              </Text>
+            </div>
+            <Dropdown
+              trigger={['click', 'hover']}
+              menu={{
+                items: [
+                  {
+                    key: 'Logout',
+                    label: 'Logout',
+                    icon: <LogoutOutlined />,
+                    onClick: handleLogout,
+                  },
+                ],
+              }}
+            >
+              <Avatar icon={<UserOutlined />} />
+            </Dropdown>
+          </Space>
         </Header>
         <Content
           style={{
