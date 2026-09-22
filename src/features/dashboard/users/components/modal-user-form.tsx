@@ -2,7 +2,7 @@ import { FormItem } from '@/components/antd-wrapper';
 import type { UserResponse, UserRole } from '@/models/user';
 import { App, Form, Input, Modal, Select } from 'antd';
 import { useEffect } from 'react';
-import { useCreateUser, useUpdateUser } from '../users/hooks/use-users';
+import { useCreateUser, useUpdateUser } from '../hooks/use-users';
 
 type UserFormValues = { name: string; email: string; role: UserRole; password?: string };
 type ModalUserFormProps = { open: boolean; onClose: () => void; user?: UserResponse };

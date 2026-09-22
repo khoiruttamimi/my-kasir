@@ -5,7 +5,7 @@ import PaginationTable from '@/components/pagination-table';
 import { App, Button, Flex, Space, Table } from 'antd';
 import { useDeleteProduct, useGetProducts } from './hooks/use-products';
 import { useQueryParams } from '@/hooks/use-query-params';
-import ModalProductForm from '../components/modal-product-form';
+import ModalProductForm from './components/modal-product-form';
 import { useState } from 'react';
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { Product } from '@/models/product';

@@ -1,0 +1,422 @@
+[
+  {
+    "id": "e6e2710a-1622-4c48-b6da-9262aafeb7fd",
+    "invoiceNumber": "INV-20260917-0001",
+    "items": [
+      {
+        "productId": "1",
+        "productName": "Indomie Goreng",
+        "price": 3500,
+        "quantity": 1,
+        "subtotal": 3500
+      }
+    ],
+    "subtotal": 3500,
+    "total": 3500,
+    "paymentMethod": "cash",
+    "paidAmount": 3500,
+    "changeAmount": 0,
+    "userId": "1",
+    "userName": "Admin My Kasir",
+    "createdAt": "2026-09-17T02:30:00.000Z"
+  },
+  {
+    "id": "ef1dbfbe-eb4e-4553-acf1-0bee3a1533f3",
+    "invoiceNumber": "INV-20260917-0002",
+    "items": [
+      {
+        "productId": "5",
+        "productName": "Biskuit Roma",
+        "price": 8500,
+        "quantity": 2,
+        "subtotal": 17000
+      },
+      {
+        "productId": "6",
+        "productName": "Kopi Sachet",
+        "price": 2500,
+        "quantity": 3,
+        "subtotal": 7500
+      }
+    ],
+    "subtotal": 24500,
+    "total": 24500,
+    "paymentMethod": "qris",
+    "paidAmount": 24500,
+    "changeAmount": 0,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-17T05:30:00.000Z"
+  },
+  {
+    "id": "2dd698b2-4b7a-45f2-9ac8-b4d3a266144d",
+    "invoiceNumber": "INV-20260917-0003",
+    "items": [
+      {
+        "productId": "8",
+        "productName": "Keripik Singkong",
+        "price": 7000,
+        "quantity": 3,
+        "subtotal": 21000
+      },
+      {
+        "productId": "9",
+        "productName": "Permen Mint",
+        "price": 3000,
+        "quantity": 1,
+        "subtotal": 3000
+      },
+      {
+        "productId": "11",
+        "productName": "Sarden Kaleng",
+        "price": 14000,
+        "quantity": 2,
+        "subtotal": 28000
+      }
+    ],
+    "subtotal": 52000,
+    "total": 52000,
+    "paymentMethod": "cash",
+    "paidAmount": 60000,
+    "changeAmount": 8000,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-17T08:30:00.000Z"
+  },
+  {
+    "id": "2789be57-70f5-41ac-9687-77ad1fad2652",
+    "invoiceNumber": "INV-20260918-0004",
+    "items": [
+      {
+        "productId": "12",
+        "productName": "Kecap Manis",
+        "price": 12000,
+        "quantity": 1,
+        "subtotal": 12000
+      }
+    ],
+    "subtotal": 12000,
+    "total": 12000,
+    "paymentMethod": "cash",
+    "paidAmount": 20000,
+    "changeAmount": 8000,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-18T02:30:00.000Z"
+  },
+  {
+    "id": "2ed61b40-4aa2-46a5-a9b7-c775c7b75f1a",
+    "invoiceNumber": "INV-20260918-0005",
+    "items": [
+      {
+        "productId": "15",
+        "productName": "Sabun Mandi",
+        "price": 5000,
+        "quantity": 2,
+        "subtotal": 10000
+      },
+      {
+        "productId": "b10ca8c1-4277-4ac3-958d-ced72ccc06bb",
+        "productName": "Hydrococo",
+        "price": 7500,
+        "quantity": 3,
+        "subtotal": 22500
+      }
+    ],
+    "subtotal": 32500,
+    "total": 32500,
+    "paymentMethod": "qris",
+    "paidAmount": 32500,
+    "changeAmount": 0,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-18T05:30:00.000Z"
+  },
+  {
+    "id": "25d86a1e-f242-441b-b19f-d22235c58a0d",
+    "invoiceNumber": "INV-20260918-0006",
+    "items": [
+      {
+        "productId": "2",
+        "productName": "Aqua 600ml",
+        "price": 4000,
+        "quantity": 3,
+        "subtotal": 12000
+      },
+      {
+        "productId": "3",
+        "productName": "Teh Kotak",
+        "price": 3500,
+        "quantity": 1,
+        "subtotal": 3500
+      },
+      {
+        "productId": "5",
+        "productName": "Biskuit Roma",
+        "price": 8500,
+        "quantity": 2,
+        "subtotal": 17000
+      }
+    ],
+    "subtotal": 32500,
+    "total": 32500,
+    "paymentMethod": "cash",
+    "paidAmount": 40000,
+    "changeAmount": 7500,
+    "userId": "1",
+    "userName": "Admin My Kasir",
+    "createdAt": "2026-09-18T08:30:00.000Z"
+  },
+  {
+    "id": "d3e92538-3bb1-47de-8b13-9b71e72fe0b5",
+    "invoiceNumber": "INV-20260919-0007",
+    "items": [
+      {
+        "productId": "6",
+        "productName": "Kopi Sachet",
+        "price": 2500,
+        "quantity": 1,
+        "subtotal": 2500
+      }
+    ],
+    "subtotal": 2500,
+    "total": 2500,
+    "paymentMethod": "cash",
+    "paidAmount": 10000,
+    "changeAmount": 7500,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-19T02:30:00.000Z"
+  },
+  {
+    "id": "1a2c4ba7-43d4-4aa2-a772-a0383fc98de4",
+    "invoiceNumber": "INV-20260919-0008",
+    "items": [
+      {
+        "productId": "9",
+        "productName": "Permen Mint",
+        "price": 3000,
+        "quantity": 2,
+        "subtotal": 6000
+      },
+      {
+        "productId": "11",
+        "productName": "Sarden Kaleng",
+        "price": 14000,
+        "quantity": 3,
+        "subtotal": 42000
+      }
+    ],
+    "subtotal": 48000,
+    "total": 48000,
+    "paymentMethod": "qris",
+    "paidAmount": 48000,
+    "changeAmount": 0,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-19T05:30:00.000Z"
+  },
+  {
+    "id": "2c2a6323-b5d4-4bb8-84e9-6b248e2114fa",
+    "invoiceNumber": "INV-20260919-0009",
+    "items": [
+      {
+        "productId": "13",
+        "productName": "Minyak Goreng 1L",
+        "price": 17000,
+        "quantity": 3,
+        "subtotal": 51000
+      },
+      {
+        "productId": "14",
+        "productName": "Gula Pasir 1kg",
+        "price": 16000,
+        "quantity": 1,
+        "subtotal": 16000
+      },
+      {
+        "productId": "15",
+        "productName": "Sabun Mandi",
+        "price": 5000,
+        "quantity": 2,
+        "subtotal": 10000
+      }
+    ],
+    "subtotal": 77000,
+    "total": 77000,
+    "paymentMethod": "cash",
+    "paidAmount": 77000,
+    "changeAmount": 0,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-19T08:30:00.000Z"
+  },
+  {
+    "id": "21242b1e-93ce-495d-baea-e57b1baa03a3",
+    "invoiceNumber": "INV-20260920-0010",
+    "items": [
+      {
+        "productId": "b10ca8c1-4277-4ac3-958d-ced72ccc06bb",
+        "productName": "Hydrococo",
+        "price": 7500,
+        "quantity": 1,
+        "subtotal": 7500
+      }
+    ],
+    "subtotal": 7500,
+    "total": 7500,
+    "paymentMethod": "cash",
+    "paidAmount": 10000,
+    "changeAmount": 2500,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-20T02:30:00.000Z"
+  },
+  {
+    "id": "724cb14b-e4dd-4291-84a7-f63ac3fe1733",
+    "invoiceNumber": "INV-20260920-0011",
+    "items": [
+      {
+        "productId": "3",
+        "productName": "Teh Kotak",
+        "price": 3500,
+        "quantity": 2,
+        "subtotal": 7000
+      },
+      {
+        "productId": "5",
+        "productName": "Biskuit Roma",
+        "price": 8500,
+        "quantity": 3,
+        "subtotal": 25500
+      }
+    ],
+    "subtotal": 32500,
+    "total": 32500,
+    "paymentMethod": "qris",
+    "paidAmount": 32500,
+    "changeAmount": 0,
+    "userId": "1",
+    "userName": "Admin My Kasir",
+    "createdAt": "2026-09-20T05:30:00.000Z"
+  },
+  {
+    "id": "91323999-9ad0-4094-980d-1531d53badfc",
+    "invoiceNumber": "INV-20260920-0012",
+    "items": [
+      {
+        "productId": "7",
+        "productName": "Susu UHT 1L",
+        "price": 18000,
+        "quantity": 3,
+        "subtotal": 54000
+      },
+      {
+        "productId": "8",
+        "productName": "Keripik Singkong",
+        "price": 7000,
+        "quantity": 1,
+        "subtotal": 7000
+      },
+      {
+        "productId": "9",
+        "productName": "Permen Mint",
+        "price": 3000,
+        "quantity": 2,
+        "subtotal": 6000
+      }
+    ],
+    "subtotal": 67000,
+    "total": 67000,
+    "paymentMethod": "cash",
+    "paidAmount": 70000,
+    "changeAmount": 3000,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-20T08:30:00.000Z"
+  },
+  {
+    "id": "96aed5fa-3dfe-4d14-aeec-31ed78fc8bca",
+    "invoiceNumber": "INV-20260921-0013",
+    "items": [
+      {
+        "productId": "11",
+        "productName": "Sarden Kaleng",
+        "price": 14000,
+        "quantity": 1,
+        "subtotal": 14000
+      }
+    ],
+    "subtotal": 14000,
+    "total": 14000,
+    "paymentMethod": "cash",
+    "paidAmount": 14000,
+    "changeAmount": 0,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-21T02:30:00.000Z"
+  },
+  {
+    "id": "3848dcef-acb6-4fc5-a3e4-ad4e80e86ff5",
+    "invoiceNumber": "INV-20260921-0014",
+    "items": [
+      {
+        "productId": "14",
+        "productName": "Gula Pasir 1kg",
+        "price": 16000,
+        "quantity": 2,
+        "subtotal": 32000
+      },
+      {
+        "productId": "15",
+        "productName": "Sabun Mandi",
+        "price": 5000,
+        "quantity": 3,
+        "subtotal": 15000
+      }
+    ],
+    "subtotal": 47000,
+    "total": 47000,
+    "paymentMethod": "qris",
+    "paidAmount": 47000,
+    "changeAmount": 0,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-21T05:30:00.000Z"
+  },
+  {
+    "id": "fc04f639-0e93-48f5-882e-55109170d3d1",
+    "invoiceNumber": "INV-20260921-0015",
+    "items": [
+      {
+        "productId": "1",
+        "productName": "Indomie Goreng",
+        "price": 3500,
+        "quantity": 3,
+        "subtotal": 10500
+      },
+      {
+        "productId": "2",
+        "productName": "Aqua 600ml",
+        "price": 4000,
+        "quantity": 1,
+        "subtotal": 4000
+      },
+      {
+        "productId": "3",
+        "productName": "Teh Kotak",
+        "price": 3500,
+        "quantity": 2,
+        "subtotal": 7000
+      }
+    ],
+    "subtotal": 21500,
+    "total": 21500,
+    "paymentMethod": "cash",
+    "paidAmount": 30000,
+    "changeAmount": 8500,
+    "userId": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec",
+    "userName": "Elsya",
+    "createdAt": "2026-09-21T08:30:00.000Z"
+  }
+]

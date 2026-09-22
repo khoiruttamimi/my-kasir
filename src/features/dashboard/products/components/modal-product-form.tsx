@@ -3,7 +3,7 @@ import { Product } from '@/models/product';
 import { requiredRule } from '@/utils/rules';
 import { App, Form, Input, Modal, Select } from 'antd';
 import { useEffect } from 'react';
-import { useCreateProduct, useUpdateProduct } from '../products/hooks/use-products';
+import { useCreateProduct, useUpdateProduct } from '../hooks/use-products';
 
 type ModalProductFormType = {
   open: boolean;

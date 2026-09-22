@@ -5,7 +5,7 @@ import PaginationTable from '@/components/pagination-table';
 import { Alert, App, Button, Flex, Result, Space, Table, Tag } from 'antd';
 import { useDeleteUser, useGetUsers } from './hooks/use-users';
 import { useQueryParams } from '@/hooks/use-query-params';
-import ModalUserForm from '../components/modal-user-form';
+import ModalUserForm from './components/modal-user-form';
 import { useState } from 'react';
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { UserResponse } from '@/models/user';
