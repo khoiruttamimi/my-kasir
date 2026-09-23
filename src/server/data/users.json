@@ -12,5 +12,12 @@
     "password": "$2b$10$Q6Va/nHy/tomTOFu7M07f.KVmVZxJCSdK635.u96lpNtvGsRe3TQu",
     "role": "cashier",
     "id": "c780e52f-5f13-4f4e-91c5-59ca99e0b2ec"
+  },
+  {
+    "name": "Fina",
+    "email": "fina@gmail.com",
+    "password": "$2b$10$VSA8BvE54glHqRtHSnViAuDB4Xi2K7rdZzw1tl9/UbZuIzq9CDgkq",
+    "role": "admin",
+    "id": "ca0c720f-1fa2-4897-8885-43f6719332a7"
   }
 ]

@@ -7,7 +7,7 @@ function getFilePath(fileName: string) {
 }
 
 export async function readJson<T>(fileName: string): Promise<T> {
-  await delay(500);
+  await delay(200);
 
   const filePath = getFilePath(fileName);
   const data = await fs.readFile(filePath, 'utf-8');
@@ -16,7 +16,7 @@ export async function readJson<T>(fileName: string): Promise<T> {
 }
 
 export async function writeJson<T>(fileName: string, data: T): Promise<void> {
-  await delay(500);
+  await delay(200);
 
   const filePath = getFilePath(fileName);
 

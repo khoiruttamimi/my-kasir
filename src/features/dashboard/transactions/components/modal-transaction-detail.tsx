@@ -62,7 +62,7 @@ export default function ModalTransactionDetail({ transactionId, onClose }: Modal
                 ),
               },
             ].map(({ label, value }) => (
-              <Flex>
+              <Flex key={label}>
                 <Col span={4}>{label}</Col>
                 <Col>: {value}</Col>
               </Flex>
@@ -83,7 +83,7 @@ export default function ModalTransactionDetail({ transactionId, onClose }: Modal
                   { label: 'Paid Amount', value: formatRupiah(data.paidAmount) },
                   { label: 'Change', value: formatRupiah(data.changeAmount) },
                 ].map(({ label, value }) => (
-                  <Flex justify="end">
+                  <Flex key={label} justify="end">
                     <Col>{label} :</Col>
                     <Col span={6} className="text-right">
                       {value}
