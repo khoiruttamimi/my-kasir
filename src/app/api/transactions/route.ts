@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
 import { withAuth } from '@/server/auth/with-auth';
-import { getTransactions } from '@/server/services/transaction.service';
-import { apiResponse } from '@/server/utils/api';
+import { createTransaction, getTransactions } from '@/server/services/transaction.service';
+import { apiResponse, readJsonBody } from '@/server/utils/api';
 
 export const GET = withAuth(async (request) =>
   apiResponse(async () => {
@@ -14,5 +14,12 @@ export const GET = withAuth(async (request) =>
     });
 
     return NextResponse.json(transactions);
+  }),
+);
+
+export const POST = withAuth(async (request, _context, session) =>
+  apiResponse(async () => {
+    const transaction = await createTransaction(await readJsonBody(request), session.user);
+    return NextResponse.json(transaction, { status: 201 });
   }),
 );

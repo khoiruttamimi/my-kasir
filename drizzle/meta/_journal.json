@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791011393536,
+      "tag": "0000_sour_mentallo",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791013048571,
+      "tag": "0001_loose_ultimo",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791014329618,
+      "tag": "0002_ambiguous_ronan",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791015335581,
+      "tag": "0003_ordinary_carnage",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791015837048,
+      "tag": "0004_short_mordo",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791016830875,
+      "tag": "0005_modern_lilandra",
+      "breakpoints": true
+    }
+  ]
+}

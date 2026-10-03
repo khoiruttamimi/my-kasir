@@ -2,20 +2,13 @@ import 'server-only';
 
 import { ApiError } from '@/utils/api';
 import type { Product } from '@/models/product';
-import { readJson, writeJson } from '@/server/utils/json-storage';
-import { createMutationQueue } from '../utils/mutation-queue';
-import { paginate } from '../utils/paginate';
-
-const FILE_NAME = 'products';
-const mutate = createMutationQueue();
-
-async function getData() {
-  return readJson<Product[]>(FILE_NAME);
-}
-
-async function saveData(products: Product[]) {
-  return writeJson(FILE_NAME, products);
-}
+import {
+  deleteProductById,
+  findProductById,
+  findProducts,
+  insertProduct,
+  updateProductById,
+} from '../repositories/product.repository';
 
 export interface GetProductsParams {
   page?: number;
@@ -24,22 +17,15 @@ export interface GetProductsParams {
 }
 
 export async function getProducts({ page = 1, limit = 10, search = '' }: GetProductsParams = {}) {
-  const products = await getData();
-  const sortedProducts = products.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-  const normalizedSearch = search.trim().toLowerCase();
-
-  const filteredProducts = normalizedSearch
-    ? sortedProducts.filter((product) => product.name.toLowerCase().includes(normalizedSearch))
-    : sortedProducts;
-
-  return paginate(filteredProducts, { page, limit });
+  return findProducts({
+    page,
+    limit,
+    search,
+  });
 }
 
 export async function getProductById(id: string) {
-  const products = await getData();
-
-  return products.find((product) => product.id === id) ?? null;
+  return findProductById(id);
 }
 
 type ProductInput = Pick<Product, 'name' | 'category' | 'price' | 'stock'>;
@@ -76,68 +62,15 @@ function validateProductPayload(payload: unknown, partial = false): Partial<Prod
 export async function createProduct(body: unknown) {
   const payload = validateProductPayload(body) as ProductInput;
 
-  return mutate(async () => {
-    const products = await getData();
-
-    const now = new Date().toISOString();
-
-    const product: Product = {
-      id: crypto.randomUUID(),
-      name: payload.name,
-      category: payload.category,
-      price: payload.price,
-      stock: payload.stock,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    products.push(product);
-
-    await saveData(products);
-
-    return product;
-  });
+  return insertProduct(payload);
 }
 
 export async function updateProduct(id: string, body: unknown) {
   const payload = validateProductPayload(body, true);
-  return mutate(async () => {
-    const products = await getData();
 
-    const index = products.findIndex((product) => product.id === id);
-
-    if (index === -1) {
-      return null;
-    }
-
-    const product: Product = {
-      ...products[index],
-      ...payload,
-      updatedAt: new Date().toISOString(),
-    };
-
-    products[index] = product;
-
-    await saveData(products);
-
-    return product;
-  });
+  return updateProductById(id, payload);
 }
 
 export async function deleteProduct(id: string) {
-  return mutate(async () => {
-    const products = await getData();
-
-    const product = products.find((product) => product.id === id);
-
-    if (!product) {
-      return null;
-    }
-
-    const newProducts = products.filter((product) => product.id !== id);
-
-    await saveData(newProducts);
-
-    return product;
-  });
+  return deleteProductById(id);
 }

@@ -1,0 +1,2 @@
+CREATE SEQUENCE "public"."transaction_invoice_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1;--> statement-breakpoint
+ALTER TABLE "transactions" ALTER COLUMN "invoice_number" SET DEFAULT 'INV-' || to_char(now() at time zone 'Asia/Jakarta', 'YYYYMMDD') || '-' || nextval('transaction_invoice_seq')::text;

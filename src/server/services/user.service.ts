@@ -1,37 +1,44 @@
+import 'server-only';
+import { randomUUID } from 'node:crypto';
+
 import { ApiError } from '@/utils/api';
 import bcrypt from 'bcryptjs';
 import type { User, UserResponse } from '@/models/user';
-import { readJson, writeJson } from '../utils/json-storage';
+import {
+  findActiveUserByEmail,
+  findUserById,
+  findUsers,
+  insertUser,
+  updateUserById,
+  softDeleteUserById,
+  insertUsersIntoEmptyTable,
+} from '@/server/repositories/user.repository';
 
-import { createMutationQueue } from '../utils/mutation-queue';
-import { paginate } from '../utils/paginate';
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const FILE_NAME = 'users';
-const mutate = createMutationQueue();
-
-async function getData() {
-  return readJson<User[]>(FILE_NAME);
-}
-
-export const login = async (email: string, password: string) => {
-  const users = await getData();
-  const user = users.find((user) => user.email.toLowerCase() === email.toLowerCase());
-
-  if (!user) {
-    return null;
-  }
-
-  const isValidPassword = await bcrypt.compare(password, user.password);
-
-  if (!isValidPassword) {
-    return null;
-  }
-
-  return user;
+export const login = async (email: string, password: string): Promise<UserResponse | null> => {
+  const user = await findActiveUserByEmail(email);
+  if (!user || !(await bcrypt.compare(password, user.password))) return null;
+  return { id: user.id, name: user.name, email: user.email, role: user.role };
 };
 
-function toResponse(user: User): UserResponse {
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+// Drizzle wraps driver errors in `cause`. Translate only the email index conflict.
+async function withEmailConflict<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    let current: unknown = error;
+    const seen = new Set<unknown>();
+    while (current && typeof current === 'object' && !seen.has(current)) {
+      seen.add(current);
+      const details = current as { code?: string; constraint?: string; cause?: unknown };
+      if (details.code === '23505' && details.constraint === 'users_active_email_unique') {
+        throw new ApiError('Email is already registered', 409);
+      }
+      current = details.cause;
+    }
+    throw error;
+  }
 }
 
 function validatePayload(payload: unknown, partial = false): Partial<Omit<User, 'id'>> {
@@ -89,61 +96,77 @@ export interface GetUsersParams {
 }
 
 export async function getUsers({ page = 1, limit = 10, search = '' }: GetUsersParams = {}) {
-  if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(limit) || limit < 1) {
+  if (
+    !Number.isSafeInteger(page) ||
+    page < 1 ||
+    !Number.isSafeInteger(limit) ||
+    limit < 1 ||
+    !Number.isSafeInteger((page - 1) * limit)
+  ) {
     throw new ApiError('Page and limit must be positive integers', 400);
   }
-  const users = await getData();
-  const query = search.trim().toLowerCase();
-  const filtered = users.filter(
-    (user) => user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query),
-  );
-  return paginate(filtered.map(toResponse), { page, limit });
+  return findUsers({ page, limit, search });
 }
 
 export async function getUserById(id: string) {
-  const users = await getData();
-  const user = users.find((user) => user.id === id);
-  return user ? toResponse(user) : null;
+  if (!UUID_PATTERN.test(id)) return null;
+  return findUserById(id);
 }
 
 export async function createUser(payload: unknown) {
   const data = validatePayload(payload) as Omit<User, 'id'>;
-  return mutate(async () => {
-    const users = await getData();
-    if (users.some((user) => user.email.toLowerCase() === data.email)) {
-      throw new ApiError('Email is already registered', 409);
-    }
-    const user: User = { ...data, id: crypto.randomUUID(), password: await bcrypt.hash(data.password, 10) };
-    await writeJson(FILE_NAME, [...users, user]);
-    return toResponse(user);
-  });
+  if (await findActiveUserByEmail(data.email)) throw new ApiError('Email is already registered', 409);
+  data.password = await bcrypt.hash(data.password, 10);
+  return withEmailConflict(() => insertUser(data));
 }
 
 export async function updateUser(id: string, payload: unknown) {
   const data = validatePayload(payload, true);
-  return mutate(async () => {
-    const users = await getData();
-    const index = users.findIndex((user) => user.id === id);
-    if (index === -1) return null;
-    if (data.email && users.some((user) => user.id !== id && user.email.toLowerCase() === data.email)) {
+  if (!UUID_PATTERN.test(id) || !(await findUserById(id))) return null;
+  if (data.email) {
+    const existing = await findActiveUserByEmail(data.email);
+    if (existing && existing.id.toLowerCase() !== id.toLowerCase()) {
       throw new ApiError('Email is already registered', 409);
     }
-    if (data.password !== undefined) data.password = await bcrypt.hash(data.password, 10);
-    users[index] = { ...users[index], ...data };
-    await writeJson(FILE_NAME, users);
-    return toResponse(users[index]);
-  });
+  }
+  if (data.password !== undefined) data.password = await bcrypt.hash(data.password, 10);
+  return withEmailConflict(() => updateUserById(id, data));
 }
 
 export async function deleteUser(id: string) {
-  return mutate(async () => {
-    const users = await getData();
-    const user = users.find((user) => user.id === id);
-    if (!user) return null;
-    await writeJson(
-      FILE_NAME,
-      users.filter((user) => user.id !== id),
-    );
-    return toResponse(user);
+  if (!UUID_PATTERN.test(id)) return null;
+  return softDeleteUserById(id);
+}
+
+// Explicit bootstrap tool only: preserve bcrypt hashes rather than hashing them again.
+export async function importLegacyUsers(payload: unknown) {
+  if (!Array.isArray(payload) || !payload.length) throw new ApiError('Legacy users must be a non-empty array', 400);
+  const emails = new Set<string>();
+  const ids = new Set<string>();
+  const mapping: { oldId: string; newId: string }[] = [];
+  const records = payload.map((entry: unknown) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new ApiError('Invalid legacy User', 400);
+    const source = entry as Record<string, unknown>;
+    if (typeof source.id !== 'string' || !source.id) throw new ApiError('Legacy User ID is required', 400);
+    const data = validatePayload({
+      name: source.name,
+      email: source.email,
+      password: source.password,
+      role: source.role,
+    }) as Omit<User, 'id'>;
+    if (!/^\$2[aby]\$(0[4-9]|[12][0-9]|3[01])\$[./A-Za-z0-9]{53}$/.test(data.password)) {
+      throw new ApiError('Legacy passwords must already be valid bcrypt hashes', 400);
+    }
+    const id = UUID_PATTERN.test(source.id) ? source.id.toLowerCase() : randomUUID();
+    if (emails.has(data.email) || ids.has(source.id.toLowerCase()))
+      throw new ApiError('Duplicate legacy User ID or email', 400);
+    emails.add(data.email);
+    ids.add(source.id.toLowerCase());
+    mapping.push({ oldId: source.id, newId: id });
+    return { ...data, id };
   });
+  const imported = await withEmailConflict(() => insertUsersIntoEmptyTable(records));
+  if (!imported)
+    throw new ApiError('User import refused: users table must be empty, including soft-deleted accounts', 409);
+  return { count: imported.length, mapping };
 }
