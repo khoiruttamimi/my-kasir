@@ -35,15 +35,31 @@ export const users = pgTable(
   ],
 );
 
-export const products = pgTable('products', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  category: varchar('category', { length: 100 }).notNull(),
-  price: integer('price').notNull(),
-  stock: integer('stock').notNull().default(0),
-  createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow().notNull(),
-  deletedAt: timestamp('deleted_at', { mode: 'string' }),
+export const products = pgTable(
+  'products',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    code: varchar('code', { length: 100 }),
+    name: varchar('name', { length: 255 }).notNull(),
+    category: varchar('category', { length: 100 }).notNull(),
+    price: integer('price').notNull(),
+    stock: integer('stock').notNull().default(0),
+    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow().notNull(),
+    deletedAt: timestamp('deleted_at', { mode: 'string' }),
+  },
+  (table) => [
+    uniqueIndex('products_code_unique').on(sql`lower(${table.code})`),
+    check('products_code_format_check', sql`${table.code} is null or ${table.code} ~ '^[A-Za-z0-9]{1,100}$'`),
+  ],
+);
+
+export const productCodeSequence = pgSequence('product_code_seq', {
+  startWith: 0,
+  minValue: 0,
+  maxValue: 9999999999,
+  increment: 1,
+  cycle: false,
 });
 
 export const transactionInvoiceSequence = pgSequence('transaction_invoice_seq', { startWith: 1 });

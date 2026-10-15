@@ -43,6 +43,13 @@
       "when": 1791016830875,
       "tag": "0005_modern_lilandra",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791965468893,
+      "tag": "0006_regular_grim_reaper",
+      "breakpoints": true
     }
   ]
 }

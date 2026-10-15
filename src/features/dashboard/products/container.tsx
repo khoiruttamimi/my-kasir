@@ -75,6 +75,7 @@ export default function ProductsContainer() {
         loading={isFetching}
         pagination={false}
         columns={[
+          { title: 'Product Code', dataIndex: 'code', render: (code: string | null) => code ?? 'Not assigned' },
           { title: 'Name', dataIndex: 'name' },
           { title: 'Category', dataIndex: 'category' },
           { title: 'Price', dataIndex: 'price', render: (price: number) => formatRupiah(price) },

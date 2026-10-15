@@ -64,14 +64,14 @@ and governance. This file provides practical repository guidance; preserve the e
 
 Run from the repository root using pnpm (declared version: 10.2.1).
 
-| Purpose | Command |
-| --- | --- |
-| Development server | `pnpm dev` |
-| Lint | `pnpm lint` |
-| Type check | `pnpm exec tsc --noEmit` |
-| Service tests | `node --test tests/user-service.test.mjs tests/transaction-service.test.mjs` |
-| Production build | `pnpm build` |
-| Serve built application | `pnpm start` |
+| Purpose                 | Command                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| Development server      | `pnpm dev`                                                                   |
+| Lint                    | `pnpm lint`                                                                  |
+| Type check              | `pnpm exec tsc --noEmit`                                                     |
+| Service tests           | `node --test tests/user-service.test.mjs tests/transaction-service.test.mjs` |
+| Production build        | `pnpm build`                                                                 |
+| Serve built application | `pnpm start`                                                                 |
 
 There is no package test script. The `.test.mjs` suites use `node:test`, TypeScript transpilation,
 and mocked repositories; they do not verify live Neon, route authorization, or browser behavior.
@@ -87,3 +87,10 @@ fulfills the request; preserve unrelated work, contracts, dependencies, and conf
 unrelated formatting, architecture changes, speculative abstractions, or dependency additions.
 Ask when an important architectural/security decision is unresolved. Summarize what changed,
 what was checked, and any remaining limits; do not claim checks that were not run.
+
+## Communication Language
+
+- Use Indonesian for all communication with the user.
+- Use Indonesian when providing explanations, asking questions, requesting clarification, and summarizing work results.
+- Retain technical terms in English if they are more commonly used in that form.
+- Continue to use English for source code, code comments, commit messages, and project documentation.

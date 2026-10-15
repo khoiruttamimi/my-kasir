@@ -1,6 +1,6 @@
 # Product HTTP Contracts
 
-Planned additive contracts; new generation behavior and code fields are not implemented yet.
+Additive implementation contracts; live database and real browser acceptance remain unverified.
 Existing endpoints are in `src/app/api/products/`; keep their current envelope/status behavior.
 
 ## Authentication

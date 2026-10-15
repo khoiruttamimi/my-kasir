@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createProduct, deleteProduct, getProducts, updateProduct } from '../api/product.api';
+import { createProduct, deleteProduct, getProducts, updateProduct, generateProductCode } from '../api/product.api';
 import { BaseParams } from '@/types/base';
 
 export function useGetProducts(params: BaseParams) {
@@ -27,6 +27,7 @@ export const useUpdateProduct = () => {
 
   return useMutation({
     mutationFn: updateProduct,
+    retry: false,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['products', 'detail', variables.id] });
@@ -44,3 +45,5 @@ export const useDeleteProduct = () => {
     },
   });
 };
+
+export const useGenerateProductCode = () => useMutation({ mutationFn: generateProductCode, retry: false });

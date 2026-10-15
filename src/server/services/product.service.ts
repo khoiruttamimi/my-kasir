@@ -1,14 +1,17 @@
 import 'server-only';
 
 import { ApiError } from '@/utils/api';
-import type { Product } from '@/models/product';
+import type { CreateProductPayload } from '@/models/product';
 import {
   deleteProductById,
   findProductById,
+  findProductByCode,
   findProducts,
   insertProduct,
   updateProductById,
+  nextProductCodeValue,
 } from '../repositories/product.repository';
+import { formatInternalProductCode } from '../utils/product-code';
 
 export interface GetProductsParams {
   page?: number;
@@ -28,7 +31,37 @@ export async function getProductById(id: string) {
   return findProductById(id);
 }
 
-type ProductInput = Pick<Product, 'name' | 'category' | 'price' | 'stock'>;
+type ProductInput = CreateProductPayload;
+
+function validateCode(value: unknown): string {
+  if (value === undefined || (typeof value === 'string' && !value.trim())) {
+    throw new ApiError('Product Code is required', 400);
+  }
+  if (typeof value !== 'string') throw new ApiError('Product Code must be a string', 400);
+  const code = value.trim();
+  if (!/^[A-Za-z0-9]{1,100}$/.test(code)) {
+    throw new ApiError('Product Code must contain 1–100 letters or digits', 400);
+  }
+  return code;
+}
+
+async function withCodeConflict<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    let current: unknown = error;
+    const seen = new Set<unknown>();
+    while (current && typeof current === 'object' && !seen.has(current)) {
+      seen.add(current);
+      const details = current as { code?: string; constraint?: string; cause?: unknown };
+      if (details.code === '23505' && details.constraint === 'products_code_unique') {
+        throw new ApiError('Product code is already in use', 409);
+      }
+      current = details.cause;
+    }
+    throw error;
+  }
+}
 
 function validateProductPayload(payload: unknown, partial = false): Partial<ProductInput> {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -37,6 +70,7 @@ function validateProductPayload(payload: unknown, partial = false): Partial<Prod
 
   const body = payload as Record<string, unknown>;
   const result: Partial<ProductInput> = {};
+  if (!partial || 'code' in body) result.code = validateCode(body.code);
   for (const field of ['name', 'category'] as const) {
     if (partial && !(field in body)) continue;
     const value = body[field];
@@ -62,15 +96,37 @@ function validateProductPayload(payload: unknown, partial = false): Partial<Prod
 export async function createProduct(body: unknown) {
   const payload = validateProductPayload(body) as ProductInput;
 
-  return insertProduct(payload);
+  if (await findProductByCode(payload.code)) throw new ApiError('Product code is already in use', 409);
+  return withCodeConflict(() => insertProduct(payload));
 }
 
 export async function updateProduct(id: string, body: unknown) {
   const payload = validateProductPayload(body, true);
-
-  return updateProductById(id, payload);
+  if (payload.code !== undefined) {
+    if (!(await findProductById(id))) return null;
+    if (await findProductByCode(payload.code, id)) throw new ApiError('Product code is already in use', 409);
+  }
+  const updated = await withCodeConflict(() => updateProductById(id, payload));
+  if (updated || payload.code !== undefined) return updated;
+  // A failed guard is not retried: another request may have assigned a code in the meantime.
+  const current = await findProductById(id);
+  if (!current) return null;
+  if (current.code === null) throw new ApiError('Product Code is required', 400);
+  throw new ApiError('Product Code was assigned by another request. Refresh and retry manually.', 409);
 }
 
 export async function deleteProduct(id: string) {
   return deleteProductById(id);
+}
+
+export async function generateProductCode(): Promise<string> {
+  for (let attempt = 0; attempt < 32; attempt++) {
+    const value = await nextProductCodeValue();
+    if (value === null) {
+      throw new ApiError('Internal product code generation range is exhausted. Enter a code manually.', 503);
+    }
+    const code = formatInternalProductCode(value);
+    if (!(await findProductByCode(code))) return code;
+  }
+  throw new ApiError('Unable to generate an unused product code. Try again or enter a code manually.', 503);
 }
