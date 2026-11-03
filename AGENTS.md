@@ -20,7 +20,7 @@ and governance. This file provides practical repository guidance; preserve the e
 - `src/server/db/`: Drizzle schema and Neon connections. `index.ts` uses HTTP;
   `transaction.ts` supplies an operation-scoped WebSocket pool for interactive transactions.
 - `drizzle/`: migrations and metadata; `scripts/`: guarded data tools; `docs/`: migration,
-  import, and seed instructions; `tests/`: Node service tests.
+  import, and seed instructions; `tests/`: shared test helpers and route contract tests. Unit tests live beside the tested source as `.test.ts`.
   Retained `src/server/data/` JSON is not the runtime store for Product, User, or Transaction.
 
 ## Coding and reuse
@@ -64,16 +64,16 @@ and governance. This file provides practical repository guidance; preserve the e
 
 Run from the repository root using pnpm (declared version: 10.2.1).
 
-| Purpose                 | Command                                                                      |
-| ----------------------- | ---------------------------------------------------------------------------- |
-| Development server      | `pnpm dev`                                                                   |
-| Lint                    | `pnpm lint`                                                                  |
-| Type check              | `pnpm exec tsc --noEmit`                                                     |
-| Service tests           | `node --test tests/user-service.test.mjs tests/transaction-service.test.mjs` |
-| Production build        | `pnpm build`                                                                 |
-| Serve built application | `pnpm start`                                                                 |
+| Purpose                 | Command                  |
+| ----------------------- | ------------------------ |
+| Development server      | `pnpm dev`               |
+| Lint                    | `pnpm lint`              |
+| Type check              | `pnpm exec tsc --noEmit` |
+| Service tests           | `pnpm test`              |
+| Production build        | `pnpm build`             |
+| Serve built application | `pnpm start`             |
 
-There is no package test script. The `.test.mjs` suites use `node:test`, TypeScript transpilation,
+Run `pnpm test` for all tests. The `.test.ts`/`.test.tsx` suites use Jest with `next/jest`, TypeScript transpilation,
 and mocked repositories; they do not verify live Neon, route authorization, or browser behavior.
 Run relevant tests for changed service behavior and add focused regression cases. Use type/lint
 checks for application changes and build for routing, bundling, server/client, or production-config

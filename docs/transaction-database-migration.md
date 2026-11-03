@@ -81,7 +81,7 @@ joining active Products.
 ```sh
 pnpm exec tsc --noEmit
 pnpm lint
-node --test tests/transaction-service.test.mjs
+pnpm test --runTestsByPath src/server/services/transaction.service.test.ts
 ```
 
 Service tests mock the repository and cover snapshots, authoritative totals,

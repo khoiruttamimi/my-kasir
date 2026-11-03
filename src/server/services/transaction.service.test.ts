@@ -1,52 +1,33 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import Module, { createRequire } from 'node:module';
-import path from 'node:path';
-import { test } from 'node:test';
-import ts from 'typescript';
-
-const loadDependency = createRequire(import.meta.url);
-const modulePaths = new Module(import.meta.filename);
-modulePaths.paths = Module._nodeModulePaths(path.resolve('tests'));
-
-// Exercise the real service without connecting to Neon or requiring a Next runtime.
-const apiModule = new Module('api');
-apiModule._compile(
-  ts.transpileModule(fs.readFileSync('src/utils/api.ts', 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS },
-  }).outputText,
-  'api.js',
-);
+import { expect, test } from '@jest/globals';
+import { loadSource } from '../../../tests/helpers/load-source';
+import type { PreparedTransaction } from '@/server/repositories/transaction.repository';
 const productId = '11111111-1111-4111-8111-111111111111';
 let products = [{ id: productId, name: 'Historical name', price: 10000 }];
-let prepared;
-let query;
+let prepared: PreparedTransaction;
+let query: unknown;
 const repository = {
-  findTransactions: async (params) => {
+  findTransactions: async (params: { page: number; limit: number; search: string }) => {
     query = params;
     return { data: [], pagination: params };
   },
   findTransactionById: async () => null,
-  insertTransactionWithItems: async (_ids, prepare) => {
+  insertTransactionWithItems: async (
+    _ids: string[],
+    prepare: (currentProducts: { id: string; name: string; price: number }[]) => PreparedTransaction, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+  ) => {
     prepared = prepare(products);
     return { ...prepared.transaction, items: prepared.items };
   },
 };
-const serviceModule = new Module('transaction-service');
-serviceModule.paths = modulePaths.paths;
-serviceModule.require = (id) => {
-  if (id === 'server-only') return {};
-  if (id === '@/utils/api') return apiModule.exports;
-  if (id === '@/server/repositories/transaction.repository') return repository;
-  return loadDependency(id);
-};
-serviceModule._compile(
-  ts.transpileModule(fs.readFileSync('src/server/services/transaction.service.ts', 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS },
-  }).outputText,
-  path.resolve('src/server/services/transaction.service.ts'),
+const service = loadSource<typeof import('@/server/services/transaction.service')>(
+  'src/server/services/transaction.service.ts',
+  {
+    'server-only': {},
+    '@/utils/api': loadSource<typeof import('@/utils/api')>('src/utils/api.ts'),
+    '@/server/repositories/transaction.repository': repository,
+  },
 );
-const service = serviceModule.exports;
 const cashier = { id: '1', name: 'Cashier' };
 const payload = () => ({
   items: [{ productId, quantity: 2, price: 1, productName: 'Forged', subtotal: 2 }],
@@ -58,15 +39,15 @@ const payload = () => ({
 
 test('uses database snapshots and server totals, with authenticated cashier identity', async () => {
   const result = await service.createTransaction(payload(), cashier);
-  assert.deepEqual(result.items, [
+  expect(result.items).toStrictEqual([
     { productId, productName: 'Historical name', price: 10000, quantity: 2, subtotal: 20000 },
   ]);
-  assert.equal(result.total, 20000);
-  assert.equal(result.subtotal, 20000);
-  assert.equal(result.changeAmount, 5000);
-  assert.equal(result.userId, '1');
+  expect(result.total).toBe(20000);
+  expect(result.subtotal).toBe(20000);
+  expect(result.changeAmount).toBe(5000);
+  expect(result.userId).toBe('1');
   products[0].price = 12000;
-  assert.equal(result.items[0].price, 10000);
+  expect(result.items[0].price).toBe(10000);
   products[0].price = 10000;
 });
 
@@ -103,7 +84,7 @@ test('rejects invalid quantities, duplicates, underpayment, and overflow', async
 test('QRIS requires exact payment and returns zero change', async () => {
   await assert.rejects(service.createTransaction({ ...payload(), paymentMethod: 'qris' }, cashier), /equal/);
   const result = await service.createTransaction({ ...payload(), paymentMethod: 'qris', paidAmount: 20000 }, cashier);
-  assert.equal(result.changeAmount, 0);
+  expect(result.changeAmount).toBe(0);
 });
 
 test('validates pagination and forwards existing search parameters', async () => {
@@ -111,6 +92,6 @@ test('validates pagination and forwards existing search parameters', async () =>
     await assert.rejects(service.getTransactions(params), /positive integers/);
   }
   await service.getTransactions({ page: 2, limit: 5, search: ' Invoice_% ' });
-  assert.deepEqual(query, { page: 2, limit: 5, search: ' Invoice_% ' });
-  assert.equal(await service.getTransactionById('legacy-invalid-id'), null);
+  expect(query).toStrictEqual({ page: 2, limit: 5, search: ' Invoice_% ' });
+  expect(await service.getTransactionById('legacy-invalid-id')).toBe(null);
 });

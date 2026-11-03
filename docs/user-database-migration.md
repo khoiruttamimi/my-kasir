@@ -61,7 +61,7 @@ sessions. This migration does not change NextAuth session semantics.
 ```sh
 pnpm exec tsc --noEmit
 pnpm lint
-node --test tests/user-service.test.mjs tests/transaction-service.test.mjs
+pnpm test
 ```
 
 After applying to a test database and importing accounts, verify login, User

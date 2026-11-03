@@ -74,20 +74,40 @@ ID mappings as documented in `docs/`.
 
 Implementation changes MUST pass relevant existing type, lint, and behavior checks, or document
 pre-existing failures with evidence and their impact. Changes to service business rules MUST
-include focused regression coverage of affected success and failure behavior using the existing
-Node test setup where applicable. Tests MUST verify observable behavior rather than mirror code.
+include focused regression coverage of affected success and failure behavior using Jest with
+`next/jest`. Tests MUST verify observable behavior rather than mirror implementation details.
 
-Mocked service tests MUST NOT be presented as proof of real database constraints, rollback,
-concurrency, route authorization, or browser behavior. Changes affecting these behaviors MUST
-include appropriate integration or manual verification evidence, or explicitly record what could
-not be verified and why. The baseline does not require a new testing framework, coverage target,
-or mandatory test-first workflow. Relevant operational and contract documentation MUST accompany
+Unit tests MUST live beside the tested source as `.test.ts`, or `.test.tsx` when the test contains
+JSX. Test files MUST NOT be placed in `src/app/`; route contract tests and shared test helpers
+belong in `tests/`. Coverage MUST prioritize business rules and regression-prone behavior,
+including validation, authorization, payment calculations, and important form interactions.
+A test for every source file is not required; purely presentational files do not require a
+separate test unless they contain behavior or a regression worth protecting.
+
+Service and route contract tests MUST use the Node environment. New DOM component tests MUST use
+React Testing Library with the Jest `jsdom` environment and assert user-visible behavior.
+The retained Product form harness simulates hooks and element trees; its results MUST NOT be
+represented as a real DOM render or real Ant Design/browser verification. Jest transpilation
+MUST NOT substitute for the separate TypeScript check.
+
+Mocked tests MUST NOT be presented as proof of live database constraints, rollback, concurrency,
+real authentication/session integration, or browser behavior. Mocked route contract tests can
+verify handler authorization decisions against supplied sessions, but do not verify real login
+or issued JWTs. Changes affecting these integration behaviors MUST include appropriate
+integration or manual verification evidence, or explicitly record what could not be verified
+and why.
+
+Coverage reports MUST disclose relevant measurement limits. Source evaluated through the retained
+transpilation loader may not map accurately to original TypeScript coverage; its percentage MUST
+NOT be presented as complete business-rule coverage. No mandatory coverage percentage or
+test-first workflow is imposed. Relevant operational and contract documentation MUST accompany
 behavior changes so maintainers can reproduce and assess them.
 
 ## Repository Baseline
 
 This baseline comes from inspected code/configuration and `docs/`, rather than the generic
-scaffold README. Versions describe initial adoption and permit deliberate, reviewed upgrades.
+scaffold README. Versions reflect the inspected baseline and accepted amendments, and permit
+deliberate, reviewed upgrades.
 
 - Runtime/UI: Next.js 15.5.26 App Router, React/React DOM 19.1.0, strict TypeScript 5,
   Ant Design 5, icons, Next.js style registry, and React 19 compatibility patch.
@@ -97,7 +117,7 @@ scaffold README. Versions describe initial adoption and permit deliberate, revie
   Neon HTTP; interactive transaction creation uses an operation-scoped WebSocket pool with
   cleanup in `finally`. Both use `DATABASE_URL`.
 - Tools: pnpm 10.2.1 with `pnpm-lock.yaml`, Sass/SCSS modules, dotenv, tsx, ESLint 9,
-  and Prettier 3.
+  Prettier 3, Jest 30, React Testing Library, and jest-environment-jsdom 30.
 - `src/app/`: routes, layouts, loading/not-found UI, global CSS, and API handlers.
   `src/auth.ts`, `src/middleware.ts`, and auth type augmentation support authentication/routing.
 - `src/features/`: auth and dashboard Product/User/Transaction containers, components,
@@ -108,32 +128,45 @@ scaffold README. Versions describe initial adoption and permit deliberate, revie
   Product, User, and Transaction repositories now use PostgreSQL. Retained JSON files/helpers
   do not establish a requirement for runtime JSON persistence.
 - `drizzle/`: SQL migrations and metadata. `scripts/`: guarded seed/import tools.
-  `docs/`: migration, historical data, and seed instructions. `tests/`: service tests.
+  `docs/`: migration, historical data, and seed instructions. `tests/`: shared test helpers
+  and mocked Product/User/Transaction route contract tests. Unit tests live beside their source.
   `.specify/` and `.agents/`: specification workflow resources separate from application code.
 - Conventions: kebab-case filenames; `.service.ts`, `.repository.ts`, and `.api.ts` suffixes;
   `use-*.ts` hooks; PascalCase components/types; camelCase values; `@/*` alias to `src/*`.
   Follow local import/export patterns without imposing a new ordering rule. Prettier uses
   two spaces, single quotes, semicolons, 120 columns, bracket spacing, and arrow parentheses.
-- Testing: User and Transaction `.test.mjs` files use `node:test`, strict assertions,
-  TypeScript transpilation, and mocked repositories. No package test script or configured
-  browser/integration runner is present. Live Neon checks are documented separately.
+- Testing: `jest.config.mjs` uses `next/jest`, the `@/` alias, and the Node environment by default.
+  Jest discovers `.test.ts`/`.test.tsx` files under `src/` and `tests/`, excluding `src/app/`.
+  DOM tests opt into `jsdom` and React Testing Library; `@testing-library/jest-dom/jest-globals` supplies DOM
+  matchers for imports from `@jest/globals`. Existing isolated source-loader tests retain
+  explicit dependency mocks. `pnpm test` and `pnpm test:watch` run Jest. No real browser/E2E
+  runner is configured; live Neon checks remain separate. See `tests/README.md` for details.
 
 ## Development Workflow and Quality Gates
 
 Before implementation, contributors MUST inspect the affected feature, service/repository
 contracts, and relevant `docs/` guidance. Plans and reviews MUST identify intentional behavior
-changes, migration needs, verification limits, and compliance with these principles.
+changes, migration needs, verification limits, and compliance with these principles. Generated
+plans and tasks MUST apply the testing rules above even when generic template examples describe
+optional tests, a test-first sequence, or a different test directory layout.
 
 Use the existing checks for application changes:
 
 ```sh
 pnpm exec tsc --noEmit
 pnpm lint
-node --test tests/user-service.test.mjs tests/transaction-service.test.mjs
+pnpm test
 ```
 
-Run relevant service tests when their behavior or dependencies change. Run `pnpm build` for
-changes affecting bundling, routing, server/client boundaries, or production configuration.
+Run relevant service, component, or route contract tests when their behavior or dependencies
+change. Use `pnpm test --runTestsByPath <test-file>` to select a file, `pnpm test --runInBand`
+for serial execution, and `pnpm test:watch` while developing. `pnpm test --coverage` produces
+terminal and HTML reports under `coverage/`; interpret them subject to the loader limits above.
+Coverage artifacts MUST NOT be committed. Tests MUST NOT execute database migrations, imports,
+or seeds as part of verification.
+
+Run `pnpm build` for changes affecting bundling, routing, server/client boundaries, or
+production configuration.
 Review lint warnings instead of disabling rules globally: the current ESLint setup includes
 Next.js and TypeScript rules and treats console usage and ordinary unused variables as warnings.
 Formatting MUST follow the existing Prettier configuration.
@@ -166,4 +199,4 @@ Specifications, plans, tasks, implementation reviews, and amendments MUST check 
 constitution. Conflicts MUST be resolved explicitly rather than silently changing behavior.
 Dependent workflow templates MUST NOT be modified as part of constitution updates.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-10-14
+**Version**: 1.1.0 | **Ratified**: 2026-10-14 | **Last Amended**: 2026-11-03
