@@ -16,7 +16,7 @@ interface SetupOptions {
   sequenceFailure?: unknown;
   sequence?: string[];
   guardedMiss?: boolean;
-  afterMiss?: (records: ProductRecord[]) => void; // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+  afterMiss?: (records: ProductRecord[]) => void;
 }
 export function setup(options: SetupOptions = {}) {
   const records = options.records ?? [];

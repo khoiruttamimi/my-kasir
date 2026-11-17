@@ -45,7 +45,6 @@ function setup() {
           calls++;
           return requestedId === id ? detail() : null;
         },
-        // eslint-disable-next-line no-unused-vars -- Parameter names document the preparation callback type.
         insertTransactionWithItems: async (ids: string[], prepare: (rows: typeof products) => PreparedTransaction) => {
           expect(ids).toStrictEqual([productId]);
           const prepared = prepare(products);

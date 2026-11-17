@@ -14,7 +14,7 @@ const repository = {
   findTransactionById: async () => null,
   insertTransactionWithItems: async (
     _ids: string[],
-    prepare: (currentProducts: { id: string; name: string; price: number }[]) => PreparedTransaction, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+    prepare: (currentProducts: { id: string; name: string; price: number }[]) => PreparedTransaction,
   ) => {
     prepared = prepare(products);
     return { ...prepared.transaction, items: prepared.items };

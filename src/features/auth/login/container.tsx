@@ -2,6 +2,7 @@
 
 import { FormItem } from '@/components/antd-wrapper';
 import { Alert, Button, Card, Form, Input } from 'antd';
+import Image from 'next/image';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { LoginFormValues } from './types';
@@ -37,9 +38,13 @@ const LoginContainer = () => {
   return (
     <Card style={{ width: 420 }}>
       <div style={{ textAlign: 'center' }}>
-        <img
+        <Image
           src="/logo/logo_text.png"
           alt="logo"
+          width={1024}
+          height={1024}
+          sizes="190px"
+          loading="eager"
           style={{ marginBottom: 16, height: 50, width: 190, objectFit: 'cover' }}
         />
       </div>

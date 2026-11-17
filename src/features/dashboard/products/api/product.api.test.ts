@@ -24,7 +24,7 @@ test('client partial edits omit unspecified code/timestamps and generation has n
   expect(requests[1].init.method).toBe('POST');
   expect(requests[1].init.cache).toBe('no-store');
   const hooks = loadSource<{
-    useUpdateProduct: () => { retry: boolean; onSuccess: (data: unknown, variables: { id: string }) => void }; // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+    useUpdateProduct: () => { retry: boolean; onSuccess: (data: unknown, variables: { id: string }) => void };
     useGenerateProductCode: () => { retry: boolean; onSuccess?: unknown };
   }>('src/features/dashboard/products/hooks/use-products.ts', {
     '../api/product.api': api,

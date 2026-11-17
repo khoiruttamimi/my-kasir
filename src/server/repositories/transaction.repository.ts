@@ -94,7 +94,6 @@ export async function findTransactionById(id: string) {
 
 export async function insertTransactionWithItems(
   productIds: string[],
-  // eslint-disable-next-line no-unused-vars -- Parameter name documents the callback type.
   prepare: (currentProducts: ProductRow[]) => PreparedTransaction,
 ) {
   return withTransactionDatabase((database) =>

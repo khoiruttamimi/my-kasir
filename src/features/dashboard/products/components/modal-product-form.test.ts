@@ -11,7 +11,7 @@ type FormProps = {
   product?: Omit<FormValues, 'code'> & { id: string; code: string | null };
 };
 type ElementNode = {
-  type: string | ((props: ElementProps) => unknown); // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+  type: string | ((props: ElementProps) => unknown);
   props: ElementProps;
 };
 type ElementProps = {
@@ -24,15 +24,15 @@ type ElementProps = {
   okButtonProps: { disabled: boolean };
   onCancel: () => void;
   onClick: () => Promise<void>;
-  onFinish: (values: FormValues) => Promise<void>; // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
-  onValuesChange: (values: FormValues) => void; // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+  onFinish: (values: FormValues) => Promise<void>;
+  onValuesChange: (values: FormValues) => void;
 };
 function isElement(node: unknown): node is ElementNode {
   return !!node && typeof node === 'object' && 'type' in node && 'props' in node;
 }
 function productFormHarness() {
   const states: unknown[] = [],
-    setters: ((value: unknown) => void)[] = [], // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+    setters: ((value: unknown) => void)[] = [],
     refs: { current: unknown }[] = [],
     effects: { deps: unknown[]; cleanup?: void | (() => void) }[] = [];
   let cursor = 0,
@@ -48,7 +48,7 @@ function productFormHarness() {
   let closed = 0,
     requests = 0,
     confirmation: { onOk: () => Promise<void> } | undefined;
-  const pending: { resolve: (value: { code: string }) => void; reject: (error: unknown) => void }[] = []; // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+  const pending: { resolve: (value: { code: string }) => void; reject: (error: unknown) => void }[] = [];
   const formCalls: string[] = [];
   const effectJobs: (() => void)[] = [];
   let formMounted = false;
@@ -119,7 +119,7 @@ function productFormHarness() {
       return new Promise<{ code: string }>((resolve, reject) => pending.push({ resolve, reject }));
     },
   };
-  const { default: Component } = loadSource<{ default: (props: FormProps) => ElementNode }>( // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+  const { default: Component } = loadSource<{ default: (props: FormProps) => ElementNode }>(
     'src/features/dashboard/products/components/modal-product-form.tsx',
     {
       react,
@@ -175,7 +175,6 @@ function productFormHarness() {
     } while (stateChanged);
     return tree;
   }
-  // eslint-disable-next-line no-unused-vars -- Parameter names document test callback types.
   function search(predicate: (node: ElementNode) => boolean, node: unknown): ElementNode | undefined {
     if (Array.isArray(node)) {
       for (const child of node) {
@@ -186,7 +185,6 @@ function productFormHarness() {
     if (!isElement(node)) return undefined;
     return predicate(node) ? node : search(predicate, node.props.children);
   }
-  // eslint-disable-next-line no-unused-vars -- Parameter names document test callback types.
   function find(predicate: (node: ElementNode) => boolean): ElementNode {
     const result = search(predicate, tree);
     assert.ok(result, 'expected element must exist');

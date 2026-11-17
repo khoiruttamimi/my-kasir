@@ -19,11 +19,11 @@ export function loadSource<T>(file: string, dependencies: Record<string, unknown
   const loaded = { exports: {} as unknown };
   // Evaluate in the Jest environment so source and assertions share the same built-in prototypes.
   const evaluate = new Function('module', 'exports', 'require', '__filename', '__dirname', source) as (
-    module: { exports: unknown }, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
-    exports: unknown, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
-    require: NodeJS.Require, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
-    filename: string, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
-    dirname: string, // eslint-disable-line no-unused-vars -- Parameter names document test callback types.
+    module: { exports: unknown },
+    exports: unknown,
+    require: NodeJS.Require,
+    filename: string,
+    dirname: string,
   ) => void;
   const mockedRequire = ((name: string) =>
     name in dependencies ? dependencies[name] : localRequire(name)) as NodeJS.Require;

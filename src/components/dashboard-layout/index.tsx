@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons';
 import { App, Avatar, Button, Dropdown, Grid, Layout, Menu, Space, theme } from 'antd';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useRoleChecking } from '@/hooks/use-auth';
@@ -52,11 +53,17 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
         width={SIDER_WITH}
         collapsedWidth={layout.lg ? SIDER_COLLAPSED_WITH : 0}
       >
-        <img
-          src={collapsed ? '/logo/logo_icon.png' : '/logo/logo_text.png'}
-          alt="logo"
-          style={{ margin: '12px 0', height: 48, width: '100%', objectFit: 'cover' }}
-        />
+        <div style={{ height: HEADER_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Image
+            src={collapsed ? '/logo/logo_icon.png' : '/logo/logo_text.png'}
+            alt="logo"
+            width={1024}
+            height={1024}
+            sizes={`${collapsed ? SIDER_COLLAPSED_WITH : SIDER_WITH}px`}
+            loading="eager"
+            style={{ margin: '12px 0', height: 48, width: '70%', objectFit: 'cover' }}
+          />
+        </div>
         <Menu
           mode="inline"
           selectedKeys={[pathname]}

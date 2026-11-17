@@ -12,16 +12,17 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...tseslint.configs.recommended, // aturan TypeScript
+  ...tseslint.configs.recommended,
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
   },
   {
     rules: {
-      ...prettierConfig.rules, // matikan rules ESLint yang bentrok sama Prettier
-      'no-unused-vars': 'warn', // kasih warning, bukan error
-      'no-console': 'warn', // biar gak ada console.log nyasar di production
+      ...prettierConfig.rules,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-console': 'warn',
     },
   },
 ];
