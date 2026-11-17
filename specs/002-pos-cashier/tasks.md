@@ -125,9 +125,9 @@ confirms state preservation through the real shell and toggle.
 
 ## Phase 7: Cross-Cutting Verification
 
-- [ ] T025 Run `pnpm lint`, `pnpm exec tsc --noEmit`, `pnpm test`, and `pnpm build` from the repository root using `package.json`. Compare Product results with T001 and document any existing failures.
-- [ ] T026 Run the browser acceptance matrix in `specs/002-pos-cashier/quickstart.md` against a configured development environment. Cover both roles and signed-out navigation, existing Product and Transaction views, lookup timeout and grid failure recovery, cart totals, and keyboard navigation. At 1440, 768, and 375 px verify focus toggling preserves the workspace. Confirm the grid, cart controls, and exit stay reachable without horizontal overflow. Record whether physical scanner hardware was available.
-- [ ] T027 Record verification results and limits in `specs/002-pos-cashier/quickstart.md`. Review the final diff against `specs/002-pos-cashier/plan.md` for compliance with the agreed Phase 1 scope and unchanged default Product contracts.
+- [X] T025 Run `pnpm lint`, `pnpm exec tsc --noEmit`, `pnpm test`, and `pnpm build` from the repository root using `package.json`. Compare Product results with T001 and document any existing failures.
+- [X] T026 Run the browser acceptance matrix in `specs/002-pos-cashier/quickstart.md` against a configured development environment. Cover both roles and signed-out navigation, existing Product and Transaction views, lookup timeout and grid failure recovery, cart totals, and keyboard navigation. At 1440, 768, and 375 px verify focus toggling preserves the workspace. Confirm the grid, cart controls, and exit stay reachable without horizontal overflow. Record whether physical scanner hardware was available.
+- [X] T027 Record verification results and limits in `specs/002-pos-cashier/quickstart.md`. Review the final diff against `specs/002-pos-cashier/plan.md` for compliance with the agreed Phase 1 scope and unchanged default Product contracts.
 
 ## Dependencies & Execution Order
 
