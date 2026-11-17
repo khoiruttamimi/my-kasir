@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition, type KeyboardEvent } from 'react';
-import { Button, Input, Pagination, Typography } from 'antd';
+import { Button, Input, Pagination, Typography, theme } from 'antd';
 import idID from 'antd/locale/id_ID';
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
+import { useDashboardFocusMode } from '@/components/dashboard-layout/focus-mode';
 import { useQueryParams } from '@/hooks/use-query-params';
+import { formatRupiah } from '@/utils/format-money';
 import CartPanel from './components/cart-panel';
 import ProductGrid from './components/product-grid';
 import { useCashierCart } from './hooks/use-cashier-cart';
@@ -33,6 +36,9 @@ export default function CashierContainer() {
   const [scanStatus, setScanStatus] = useState<keyof typeof scanMessages | null>(null);
   const scanRequest = useRef<AbortController | null>(null);
   const [pagePending, startPageTransition] = useTransition();
+  const cartHeading = useRef<HTMLElement>(null);
+  const focusMode = useDashboardFocusMode();
+  const { token } = theme.useToken();
   const { getParam, setParams } = useQueryParams();
   const { addProduct, ...cart } = useCashierCart();
   const lookupCode = useCashierCodeLookup();
@@ -120,51 +126,75 @@ export default function CashierContainer() {
 
   return (
     <section className={styles.cashier} lang="id" aria-labelledby="cashier-title">
-      <div className={styles.heading}>
+      <div className={styles.heading} style={{ backgroundColor: token.colorBgContainer }}>
         <Typography.Title level={2} id="cashier-title">
           Kasir
         </Typography.Title>
-        <Typography.Text strong>{cart.totalItems} item</Typography.Text>
-      </div>
-      <div className={styles.search}>
-        <label htmlFor="cashier-search">Cari nama atau kode produk</label>
-        <Input
-          id="cashier-search"
-          value={search}
-          readOnly={scanStatus === 'pending'}
-          onChange={(event) => changeSearch(event.target.value)}
-          onKeyDown={handleScanKey}
-        />
-      </div>
-      <div role="status" className={styles.feedback}>
-        {scanStatus ? scanMessages[scanStatus] : lastAdded && `${lastAdded} ditambahkan.`}
-        {canRetry && (
-          <Button type="link" onClick={() => void submitScan(search)}>
-            Coba lagi
+        <div className={styles.toolbar}>
+          <Typography.Text strong>{cart.totalItems} item</Typography.Text>
+          <Button className={styles.cartShortcut} onClick={() => cartHeading.current?.focus()}>
+            Lihat keranjang · {formatRupiah(cart.grandTotal)}
           </Button>
-        )}
+          {focusMode && (
+            <Button
+              aria-pressed={focusMode.active}
+              icon={
+                focusMode.active ? (
+                  <FullscreenExitOutlined aria-hidden="true" />
+                ) : (
+                  <FullscreenOutlined aria-hidden="true" />
+                )
+              }
+              onClick={focusMode.toggle}
+            >
+              {focusMode.active ? 'Keluar layar penuh' : 'Layar penuh'}
+            </Button>
+          )}
+        </div>
       </div>
-      <ProductGrid
-        products={data?.products}
-        loading={loading}
-        onRetry={isError ? () => void refetch() : undefined}
-        onSelect={selectProduct}
-      />
-      {pagination && page > Math.max(1, pagination.totalPages) ? (
-        <Button onClick={() => changePage(1)}>Kembali ke halaman pertama</Button>
-      ) : pagination && pagination.totalPages > 1 ? (
-        <Pagination
-          className={styles.pagination}
-          current={page}
-          pageSize={PAGE_SIZE}
-          total={pagination.total}
-          showSizeChanger={false}
-          showLessItems
-          locale={idID.Pagination}
-          onChange={changePage}
-        />
-      ) : null}
-      <CartPanel {...cart} />
+      <div className={styles.workspace}>
+        <div className={styles.catalog}>
+          <div className={styles.search}>
+            <label htmlFor="cashier-search">Cari nama atau kode produk</label>
+            <Input
+              id="cashier-search"
+              value={search}
+              readOnly={scanStatus === 'pending'}
+              onChange={(event) => changeSearch(event.target.value)}
+              onKeyDown={handleScanKey}
+            />
+          </div>
+          <div role="status" className={styles.feedback}>
+            {scanStatus ? scanMessages[scanStatus] : lastAdded && `${lastAdded} ditambahkan.`}
+            {canRetry && (
+              <Button type="link" onClick={() => void submitScan(search)}>
+                Coba lagi
+              </Button>
+            )}
+          </div>
+          <ProductGrid
+            products={data?.products}
+            loading={loading}
+            onRetry={isError ? () => void refetch() : undefined}
+            onSelect={selectProduct}
+          />
+          {pagination && page > Math.max(1, pagination.totalPages) ? (
+            <Button onClick={() => changePage(1)}>Kembali ke halaman pertama</Button>
+          ) : pagination && pagination.totalPages > 1 ? (
+            <Pagination
+              className={styles.pagination}
+              current={page}
+              pageSize={PAGE_SIZE}
+              total={pagination.total}
+              showSizeChanger={false}
+              showLessItems
+              locale={idID.Pagination}
+              onChange={changePage}
+            />
+          ) : null}
+        </div>
+        <CartPanel {...cart} headingRef={cartHeading} />
+      </div>
     </section>
   );
 }

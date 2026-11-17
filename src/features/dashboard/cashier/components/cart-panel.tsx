@@ -1,10 +1,11 @@
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { App, Button, Card, Empty, Typography } from 'antd';
+import type { Ref } from 'react';
 import { formatRupiah } from '@/utils/format-money';
 import type { useCashierCart } from '../hooks/use-cashier-cart';
 import styles from '../styles.module.scss';
 
-type CartPanelProps = Omit<ReturnType<typeof useCashierCart>, 'addProduct'>;
+type CartPanelProps = Omit<ReturnType<typeof useCashierCart>, 'addProduct'> & { headingRef?: Ref<HTMLElement> };
 
 export default function CartPanel({
   lines,
@@ -14,6 +15,7 @@ export default function CartPanel({
   decreaseQuantity,
   removeProduct,
   clear,
+  headingRef,
 }: CartPanelProps) {
   const { modal } = App.useApp();
   const isEmpty = lines.length === 0;
@@ -34,7 +36,13 @@ export default function CartPanel({
     <section className={styles.cart} aria-labelledby="cashier-cart-title">
       <Card
         title={
-          <Typography.Title id="cashier-cart-title" level={3} className={styles.cartTitle}>
+          <Typography.Title
+            ref={headingRef}
+            id="cashier-cart-title"
+            level={3}
+            tabIndex={-1}
+            className={styles.cartTitle}
+          >
             Keranjang
           </Typography.Title>
         }
