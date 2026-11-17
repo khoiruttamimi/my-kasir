@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 import { Button, Input, Pagination, Typography } from 'antd';
 import idID from 'antd/locale/id_ID';
 import { useQueryParams } from '@/hooks/use-query-params';
+import CartPanel from './components/cart-panel';
 import ProductGrid from './components/product-grid';
 import { useCashierCart } from './hooks/use-cashier-cart';
 import { useCashierProducts, type CashierProduct } from './hooks/use-cashier-products';
@@ -18,8 +19,7 @@ export default function CashierContainer() {
   const [lastAdded, setLastAdded] = useState('');
   const [pagePending, startPageTransition] = useTransition();
   const { getParam, setParams } = useQueryParams();
-  const { lines, addProduct } = useCashierCart();
-  const totalItems = lines.reduce((total, line) => total + line.quantity, 0);
+  const { addProduct, ...cart } = useCashierCart();
   const term = search.trim();
   const requestedPage = Number(getParam('page'));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
@@ -59,7 +59,7 @@ export default function CashierContainer() {
         <Typography.Title level={2} id="cashier-title">
           Kasir
         </Typography.Title>
-        <Typography.Text strong>{totalItems} item</Typography.Text>
+        <Typography.Text strong>{cart.totalItems} item</Typography.Text>
       </div>
       <div className={styles.search}>
         <label htmlFor="cashier-search">Cari nama atau kode produk</label>
@@ -88,6 +88,7 @@ export default function CashierContainer() {
           onChange={changePage}
         />
       ) : null}
+      <CartPanel {...cart} />
     </section>
   );
 }

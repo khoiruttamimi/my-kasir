@@ -61,3 +61,52 @@
 .pagination {
   margin-top: 16px;
 }
+
+.cart {
+  margin-top: 16px;
+}
+
+.cart .cartTitle {
+  margin: 0;
+}
+
+.cartLines {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cartLine {
+  display: grid;
+  gap: 8px;
+}
+
+.cartProductName {
+  overflow-wrap: anywhere;
+}
+
+.cartActions,
+.cartAmounts,
+.cartSummary > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cartAmounts,
+.cartSummary > div {
+  justify-content: space-between;
+}
+
+.cartSummary {
+  display: grid;
+  gap: 4px;
+  margin: 16px 0;
+}
+
+.cartSummary dd {
+  margin: 0;
+}

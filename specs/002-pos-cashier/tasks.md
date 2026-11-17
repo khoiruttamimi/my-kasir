@@ -70,13 +70,13 @@ line removal, and cancellation and confirmation of clear.
 
 ### Tests
 
-- [ ] T013 [P] [US2] Add cart hook checks in `src/features/dashboard/cashier/hooks/use-cashier-cart.test.tsx` for repeat adds by product ID, price snapshots, increment and decrement bounds, removal, and derived amounts including the empty state.
-- [ ] T014 [P] [US2] Add cart interaction checks in `src/features/dashboard/cashier/components/cart-panel.test.tsx` for item-specific controls, decrease disabled at one, immediate removal, and cancel or confirm of the localized clear dialog.
+- [X] T013 [P] [US2] Add cart hook checks in `src/features/dashboard/cashier/hooks/use-cashier-cart.test.tsx` for repeat adds by product ID, price snapshots, increment and decrement bounds, removal, and derived amounts including the empty state.
+- [X] T014 [P] [US2] Add cart interaction checks in `src/features/dashboard/cashier/components/cart-panel.test.tsx` for item-specific controls, decrease disabled at one, immediate removal, and cancel or confirm of the localized clear dialog.
 
 ### Implementation
 
-- [ ] T015 [US2] Complete cart updates and derived values in `src/features/dashboard/cashier/hooks/use-cashier-cart.ts`. Keep quantity at least one for retained lines. Derive line subtotal from unit price × quantity, grand total from subtotals, and total units from quantities. Empty cart totals are zero.
-- [ ] T016 [US2] Implement the panel in `src/features/dashboard/cashier/components/cart-panel.tsx` and compose it in `src/features/dashboard/cashier/container.tsx`. Reuse Ant Design controls, the existing `App.useApp().modal.confirm` pattern, and `formatRupiah`. Display Indonesian amounts and actions, keep individual removal immediate, and show empty state with zeros after confirmed clear.
+- [X] T015 [US2] Complete cart updates and derived values in `src/features/dashboard/cashier/hooks/use-cashier-cart.ts`. Keep quantity at least one for retained lines. Derive line subtotal from unit price × quantity, grand total from subtotals, and total units from quantities. Empty cart totals are zero.
+- [X] T016 [US2] Implement the panel in `src/features/dashboard/cashier/components/cart-panel.tsx` and compose it in `src/features/dashboard/cashier/container.tsx`. Reuse Ant Design controls, the existing `App.useApp().modal.confirm` pattern, and `formatRupiah`. Display Indonesian amounts and actions, keep individual removal immediate, and show empty state with zeros after confirmed clear.
 
 **Checkpoint**: Test with fixed products independently of scanning. Cart actions stay local,
 including for an active product with zero recorded stock.
