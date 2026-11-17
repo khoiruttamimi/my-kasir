@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { and, desc, eq, ilike, isNull, isNotNull, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, isNull, isNotNull, ne, or, sql, type SQL } from 'drizzle-orm';
 import type { CreateProductPayload } from '@/models/product';
 
 import { db } from '@/server/db';
@@ -10,21 +10,36 @@ export interface FindProductsParams {
   page?: number;
   limit?: number;
   search?: string;
+  searchMode?: 'name-or-code';
 }
 
-export async function findProducts({ page = 1, limit = 10, search = '' }: FindProductsParams = {}) {
+export async function findProducts({ page = 1, limit = 10, search = '', searchMode }: FindProductsParams = {}) {
   const safePage = Math.max(page, 1);
   const safeLimit = Math.max(limit, 1);
 
   const offset = (safePage - 1) * safeLimit;
   const normalizedSearch = search.trim();
 
-  const where = normalizedSearch
-    ? and(isNull(products.deletedAt), ilike(products.name, `%${normalizedSearch}%`))
-    : isNull(products.deletedAt);
+  const searchesCode = searchMode === 'name-or-code';
+  const order = [desc(products.createdAt)];
+  let where: SQL | undefined = isNull(products.deletedAt);
+  if (normalizedSearch) {
+    // PostgreSQL uses backslash to escape literal wildcard characters in LIKE patterns.
+    const term = searchesCode ? normalizedSearch.replace(/[\\%_]/g, '\\$&') : normalizedSearch;
+    const pattern = `%${term}%`;
+    const name = ilike(products.name, pattern);
+    where = and(where, searchesCode ? or(name, ilike(products.code, pattern)) : name);
+  }
+  if (searchesCode) order.push(desc(products.id));
 
   const [data, [{ total }]] = await Promise.all([
-    db.select().from(products).where(where).orderBy(desc(products.createdAt)).limit(safeLimit).offset(offset),
+    db
+      .select()
+      .from(products)
+      .where(where)
+      .orderBy(...order)
+      .limit(safeLimit)
+      .offset(offset),
 
     db
       .select({

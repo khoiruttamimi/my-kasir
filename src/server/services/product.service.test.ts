@@ -177,3 +177,28 @@ test('generation distinguishes 32 occupied attempts, sequence exhaustion, and un
   const failure = new Error('connection failed');
   await assert.rejects(setup({ sequenceFailure: failure }).service.generateProductCode(), (error) => error === failure);
 });
+
+test('cashier list checks paging before querying and leaves legacy list parameters alone', async () => {
+  const { service, calls } = setup();
+  for (const limit of [1, 100]) {
+    await service.getProducts({ searchMode: 'name-or-code', page: 2, limit, search: '001' });
+    expect(calls.lists.at(-1)).toEqual({ searchMode: 'name-or-code', page: 2, limit, search: '001' });
+  }
+  await service.getProducts({ searchMode: 'name-or-code' });
+  expect(calls.lists.at(-1)).toEqual({ searchMode: 'name-or-code', page: 1, limit: 10, search: '' });
+
+  for (const limit of [0, 101, 1.5, Number.NaN]) {
+    await assert.rejects(
+      service.getProducts({ searchMode: 'name-or-code', limit }),
+      status(400, 'limit must be an integer between 1 and 100'),
+    );
+  }
+  for (const page of [0, 1.5, Number.POSITIVE_INFINITY]) {
+    await assert.rejects(service.getProducts({ searchMode: 'name-or-code', page }), status(400));
+  }
+  await assert.rejects(service.getProducts({ searchMode: '' }), status(400));
+  expect(calls.lists).toHaveLength(3);
+
+  await service.getProducts({ search: ' Tea ', limit: 101 });
+  expect(calls.lists.at(-1)).toEqual({ page: 1, limit: 101, search: ' Tea ' });
+});

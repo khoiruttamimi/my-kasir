@@ -43,6 +43,49 @@ test('existing collection routes preserve create/list envelopes and validation s
   expect(await unauthorized.json()).toStrictEqual({ message: 'Unauthorized' });
 });
 
+test('cashier catalog validates opted-in requests while preserving list envelopes and legacy limits', async () => {
+  const product = { ...input(), id };
+  const { service, calls } = setup({ records: [product] });
+  let session: { user: { id: string; role: string } } | null = { user: { id, role: 'cashier' } };
+  const { withAuth } = loadSource<typeof import('@/server/auth/with-auth')>('src/server/auth/with-auth.ts', {
+    '@/auth': { auth: async () => session },
+  });
+  const responses = loadSource<typeof import('@/server/utils/api')>('src/server/utils/api.ts', {
+    '@/utils/api': { ApiError },
+  });
+  const route = loadSource<typeof import('@/app/api/products/route')>('src/app/api/products/route.ts', {
+    '@/server/services/product.service': service,
+    '@/server/auth/with-auth': { withAuth },
+    '@/server/utils/api': responses,
+  });
+  const list = (params: string) => route.GET(new NextRequest(`http://localhost/api/products?${params}`), undefined);
+
+  for (const limit of [1, 24, 100]) {
+    const response = await list(`searchMode=name-or-code&search=AbC&limit=${limit}`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      data: [product],
+      pagination: { page: 1, limit, total: 1, totalPages: 1 },
+    });
+    expect(calls.lists.at(-1)).toEqual({ searchMode: 'name-or-code', search: 'AbC', page: 1, limit });
+  }
+  const legacy = await list('limit=101');
+  expect(legacy.status).toBe(200);
+  expect((await legacy.json()).pagination.limit).toBe(101);
+  expect(calls.lists.at(-1)).toEqual({ search: '', page: 1, limit: 101 });
+
+  for (const limit of ['0', '1.5', 'abc', '101']) {
+    const invalid = await list(`searchMode=name-or-code&limit=${limit}`);
+    expect(invalid.status).toBe(400);
+    expect(await invalid.json()).toEqual({ message: 'limit must be an integer between 1 and 100' });
+  }
+  expect((await list('searchMode=unknown')).status).toBe(400);
+  expect((await list('searchMode=name-or-code&page=0')).status).toBe(400);
+  session = null;
+  expect((await list('searchMode=name-or-code')).status).toBe(401);
+  expect(calls.lists).toHaveLength(4);
+});
+
 test('generation route preserves authentication, returns no-store on 200/401/503, and accepts existing cashier policy', async () => {
   const { service, calls } = setup();
   let session: { user: { id: string; role: string } } | null = { user: { id, role: 'cashier' } };

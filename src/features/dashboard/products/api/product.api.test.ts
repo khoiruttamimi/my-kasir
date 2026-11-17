@@ -2,6 +2,35 @@ import { expect, test } from '@jest/globals';
 import { loadSource } from '../../../../../tests/helpers/load-source';
 import { id } from '../../../../../tests/helpers/product-fixture';
 
+test('list requests encode cashier search mode only when the caller opts in', async () => {
+  const urls: string[] = [];
+  const api = loadSource<typeof import('@/features/dashboard/products/api/product.api')>(
+    'src/features/dashboard/products/api/product.api.ts',
+    {
+      '@/utils/api': {
+        fetcher: async (url: string) => {
+          urls.push(url);
+          return { data: [] };
+        },
+      },
+    },
+  );
+  const params = { page: 2, limit: 24, search: '001%_' };
+  await api.getProducts(params);
+  await api.getProducts({ ...params, searchMode: 'name-or-code' });
+  const legacy = new URL(urls[0], 'https://example.test');
+  const cashier = new URL(urls[1], 'https://example.test');
+  expect(legacy.pathname).toBe('/api/products');
+  expect(cashier.pathname).toBe(legacy.pathname);
+  expect(Object.fromEntries(legacy.searchParams)).toEqual({ page: '2', limit: '24', search: '001%_' });
+  expect(Object.fromEntries(cashier.searchParams)).toEqual({
+    page: '2',
+    limit: '24',
+    search: '001%_',
+    searchMode: 'name-or-code',
+  });
+});
+
 test('client partial edits omit unspecified code/timestamps and generation has no save cache side effects', async () => {
   const requests: { url: string; init: RequestInit }[] = [],
     invalidations: unknown[][] = [];
