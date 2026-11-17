@@ -11,10 +11,14 @@ export const GET = withAuth(async (request) =>
     const page = Number(searchParams.get('page') ?? 1);
     const limit = Number(searchParams.get('limit') ?? 10);
     const search = searchParams.get('search') ?? '';
+    const searchMode = searchParams.get('searchMode') ?? undefined;
 
-    const products = await getProducts({ page, limit, search });
+    const products = await getProducts({ page, limit, search, searchMode });
 
-    return NextResponse.json(products);
+    return NextResponse.json(
+      products,
+      searchMode === 'exact-code' ? { headers: { 'Cache-Control': 'no-store' } } : undefined,
+    );
   }),
 );
 

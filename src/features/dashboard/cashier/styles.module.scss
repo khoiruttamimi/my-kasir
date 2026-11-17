@@ -1,0 +1,158 @@
+.cashier {
+  min-width: 0;
+}
+
+.heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.heading h2 {
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.toolbar .cartShortcut {
+  max-width: 100%;
+  height: auto;
+  min-height: 32px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.catalog {
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .workspace {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  .toolbar .cartShortcut {
+    display: none;
+  }
+}
+
+.search {
+  display: grid;
+  gap: 4px;
+  max-width: 28rem;
+}
+
+.feedback {
+  min-height: 1.5em;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 8rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 12px;
+}
+
+.grid .card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  min-height: 6rem;
+  height: auto;
+  padding: 12px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.productName {
+  font-weight: 600;
+}
+
+.productCode {
+  font-size: 0.875em;
+}
+
+.pagination {
+  margin-top: 16px;
+}
+
+.cart {
+  min-width: 0;
+}
+
+.cart .cartTitle {
+  margin: 0;
+  scroll-margin-top: 7rem;
+}
+
+.cartLines {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cartLine {
+  display: grid;
+  gap: 8px;
+}
+
+.cartProductName {
+  overflow-wrap: anywhere;
+}
+
+.cartActions,
+.cartAmounts,
+.cartSummary > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cartAmounts,
+.cartSummary > div {
+  justify-content: space-between;
+}
+
+.cartSummary {
+  display: grid;
+  gap: 4px;
+  margin: 16px 0;
+}
+
+.cartSummary dd {
+  margin: 0;
+}

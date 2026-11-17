@@ -1,0 +1,37 @@
+.cashierShell {
+  position: relative;
+  min-width: 0;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.cashierSidebar {
+  height: 100%;
+}
+
+.cashierMain {
+  min-width: 0;
+  min-height: 0;
+}
+
+.cashierContent {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: clamp(8px, 1.2vw, 12px);
+}
+
+.cashierPanel {
+  min-width: 0;
+  min-height: 100%;
+  padding: clamp(8px, 1.7vw, 24px);
+}
+
+@media (max-width: 575px) {
+  .cashierShell .cashierSidebar {
+    position: absolute;
+    z-index: 10;
+    inset: 64px auto 0 0;
+    height: auto;
+  }
+}

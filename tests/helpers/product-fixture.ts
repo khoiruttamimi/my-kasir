@@ -20,15 +20,31 @@ interface SetupOptions {
 }
 export function setup(options: SetupOptions = {}) {
   const records = options.records ?? [];
-  const calls = { inserts: 0, updates: 0, generated: 0, lookup: [] as { code: string; excludeId?: string }[] };
+  const calls = {
+    inserts: 0,
+    updates: 0,
+    generated: 0,
+    lookup: [] as { code: string; excludeId?: string }[],
+    activeLookups: [] as string[],
+    lists: [] as import('@/server/repositories/product.repository').FindProductsParams[],
+  };
   const repository = {
     nextProductCodeValue: async () => {
       const position = calls.generated++;
       if (options.sequenceFailure) throw options.sequenceFailure;
       return options.sequence ? (options.sequence[position] ?? null) : String(position);
     },
-    findProducts: async () => ({ data: records.filter((row) => !row.deletedAt), pagination: {} }),
+    findProducts: async (params: import('@/server/repositories/product.repository').FindProductsParams) => {
+      calls.lists.push(params);
+      const { page = 1, limit = 10 } = params;
+      const data = records.filter((row) => !row.deletedAt);
+      return { data, pagination: { page, limit, total: data.length, totalPages: Math.ceil(data.length / limit) } };
+    },
     findProductById: async (productId: string) => records.find((row) => row.id === productId && !row.deletedAt) ?? null,
+    findActiveProductByCode: async (code: string) => {
+      calls.activeLookups.push(code);
+      return records.find((row) => !row.deletedAt && row.code?.toLowerCase() === code.toLowerCase()) ?? null;
+    },
     findProductByCode: async (code: string, excludeId?: string) => {
       calls.lookup.push({ code, excludeId });
       return records.find((row) => row.id !== excludeId && row.code?.toLowerCase() === code.toLowerCase()) ?? null;

@@ -177,3 +177,49 @@ test('generation distinguishes 32 occupied attempts, sequence exhaustion, and un
   const failure = new Error('connection failed');
   await assert.rejects(setup({ sequenceFailure: failure }).service.generateProductCode(), (error) => error === failure);
 });
+
+test('cashier list checks paging before querying and leaves legacy list parameters alone', async () => {
+  const { service, calls } = setup();
+  for (const limit of [1, 100]) {
+    await service.getProducts({ searchMode: 'name-or-code', page: 2, limit, search: '001' });
+    expect(calls.lists.at(-1)).toEqual({ searchMode: 'name-or-code', page: 2, limit, search: '001' });
+  }
+  await service.getProducts({ searchMode: 'name-or-code' });
+  expect(calls.lists.at(-1)).toEqual({ searchMode: 'name-or-code', page: 1, limit: 10, search: '' });
+
+  for (const limit of [0, 101, 1.5, Number.NaN]) {
+    await assert.rejects(
+      service.getProducts({ searchMode: 'name-or-code', limit }),
+      status(400, 'limit must be an integer between 1 and 100'),
+    );
+  }
+  for (const page of [0, 1.5, Number.POSITIVE_INFINITY]) {
+    await assert.rejects(service.getProducts({ searchMode: 'name-or-code', page }), status(400));
+  }
+  await assert.rejects(service.getProducts({ searchMode: '' }), status(400));
+  expect(calls.lists).toHaveLength(3);
+
+  await service.getProducts({ search: ' Tea ', limit: 101 });
+  expect(calls.lists.at(-1)).toEqual({ page: 1, limit: 101, search: ' Tea ' });
+});
+
+test('exact code lookup preserves text, normalizes outer whitespace and case, and fixes pagination', async () => {
+  const product = { ...input('00AbC'), id };
+  const deleted = { ...input('00123'), id: otherId, deletedAt: '2026-01-01' };
+  const { service, calls } = setup({ records: [product, deleted] });
+  const search = (search: string) => service.getProducts({ searchMode: 'exact-code', search, page: 5, limit: 24 });
+
+  expect(await search(' 00aBC ')).toEqual({
+    data: [product],
+    pagination: { page: 1, limit: 1, total: 1, totalPages: 1 },
+  });
+  for (const code of ['00Ab', 'AbC', '00123', 'Tea', 'unknown']) {
+    expect(await search(code)).toEqual({
+      data: [],
+      pagination: { page: 1, limit: 1, total: 0, totalPages: 0 },
+    });
+  }
+  await assert.rejects(search('  '), status(400));
+  expect(calls.activeLookups).toEqual(['00aBC', '00Ab', 'AbC', '00123', 'Tea', 'unknown']);
+  expect(calls.lookup).toHaveLength(0);
+});

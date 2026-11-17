@@ -1,8 +1,14 @@
 import { UserRole } from '@/models/user';
-import { ShoppingCartOutlined, ShoppingOutlined, TeamOutlined } from '@ant-design/icons';
+import { ShopOutlined, ShoppingCartOutlined, ShoppingOutlined, TeamOutlined } from '@ant-design/icons';
 
 export const getMenus = (isHaveAccess: (role: UserRole) => boolean) => {
   const menus = [
+    {
+      key: '/dashboard/cashier',
+      icon: <ShopOutlined />,
+      label: 'Kasir',
+      roles: ['admin', 'cashier'],
+    },
     {
       key: '/dashboard/products',
       icon: <ShoppingOutlined />,
