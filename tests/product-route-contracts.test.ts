@@ -178,3 +178,48 @@ test('item routes retain PUT data envelope and distinguish assignment conflict f
   const missing = await route.GET(new NextRequest('http://localhost/'), { params: Promise.resolve({ id: otherId }) });
   expect(missing.status).toBe(404);
 });
+
+test('exact cashier reads keep Product envelopes and distinguish blank input from absent active matches', async () => {
+  const product = { ...input('00AbC'), id };
+  const { service } = setup({
+    records: [product, { ...input('00123'), id: otherId, deletedAt: '2026-01-01' }],
+  });
+  let session: { user: { id: string; role: string } } | null = { user: { id, role: 'cashier' } };
+  const { withAuth } = loadSource<typeof import('@/server/auth/with-auth')>('src/server/auth/with-auth.ts', {
+    '@/auth': { auth: async () => session },
+  });
+  const responses = loadSource<typeof import('@/server/utils/api')>('src/server/utils/api.ts', {
+    '@/utils/api': { ApiError },
+  });
+  const route = loadSource<typeof import('@/app/api/products/route')>('src/app/api/products/route.ts', {
+    '@/server/services/product.service': service,
+    '@/server/auth/with-auth': { withAuth },
+    '@/server/utils/api': responses,
+  });
+  const lookup = (search: string) =>
+    route.GET(
+      new NextRequest(
+        `http://localhost/api/products?searchMode=exact-code&page=2&limit=24&search=${encodeURIComponent(search)}`,
+      ),
+      undefined,
+    );
+
+  const hit = await lookup(' 00aBc ');
+  expect(hit.status).toBe(200);
+  expect(hit.headers.get('cache-control')).toBe('no-store');
+  expect(await hit.json()).toEqual({
+    data: [product],
+    pagination: { page: 1, limit: 1, total: 1, totalPages: 1 },
+  });
+  for (const code of ['00Ab', '00123', '999']) {
+    const miss = await lookup(code);
+    expect(miss.status).toBe(200);
+    expect(await miss.json()).toEqual({
+      data: [],
+      pagination: { page: 1, limit: 1, total: 0, totalPages: 0 },
+    });
+  }
+  expect((await lookup('  ')).status).toBe(400);
+  session = null;
+  expect((await lookup('00abc')).status).toBe(401);
+});

@@ -15,7 +15,10 @@ export const GET = withAuth(async (request) =>
 
     const products = await getProducts({ page, limit, search, searchMode });
 
-    return NextResponse.json(products);
+    return NextResponse.json(
+      products,
+      searchMode === 'exact-code' ? { headers: { 'Cache-Control': 'no-store' } } : undefined,
+    );
   }),
 );
 

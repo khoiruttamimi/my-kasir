@@ -202,3 +202,24 @@ test('cashier list checks paging before querying and leaves legacy list paramete
   await service.getProducts({ search: ' Tea ', limit: 101 });
   expect(calls.lists.at(-1)).toEqual({ page: 1, limit: 101, search: ' Tea ' });
 });
+
+test('exact code lookup preserves text, normalizes outer whitespace and case, and fixes pagination', async () => {
+  const product = { ...input('00AbC'), id };
+  const deleted = { ...input('00123'), id: otherId, deletedAt: '2026-01-01' };
+  const { service, calls } = setup({ records: [product, deleted] });
+  const search = (search: string) => service.getProducts({ searchMode: 'exact-code', search, page: 5, limit: 24 });
+
+  expect(await search(' 00aBC ')).toEqual({
+    data: [product],
+    pagination: { page: 1, limit: 1, total: 1, totalPages: 1 },
+  });
+  for (const code of ['00Ab', 'AbC', '00123', 'Tea', 'unknown']) {
+    expect(await search(code)).toEqual({
+      data: [],
+      pagination: { page: 1, limit: 1, total: 0, totalPages: 0 },
+    });
+  }
+  await assert.rejects(search('  '), status(400));
+  expect(calls.activeLookups).toEqual(['00aBC', '00Ab', 'AbC', '00123', 'Tea', 'unknown']);
+  expect(calls.lookup).toHaveLength(0);
+});

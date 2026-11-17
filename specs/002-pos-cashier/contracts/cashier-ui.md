@@ -23,6 +23,7 @@ preference survive toggling. Navigating away ends focus mode, so returning opens
 | Lookup succeeds with no match | Keep the code and show **Kode produk tidak ditemukan**. |
 | Lookup reaches 10 seconds without completing | End the attempt and unlock the field. Keep the code and cart. Show **Pencarian kode melebihi batas waktu. Coba lagi.** and the **Coba lagi** action. A late result from this attempt cannot add an item. |
 | Lookup fails on the network | Unlock the field and keep the code and cart. Show **Gagal mencari kode produk. Periksa koneksi dan coba lagi.** and the **Coba lagi** action. |
+| Lookup returns an HTTP 5xx error | Unlock the field and keep the code and cart. Show **Gagal mencari kode produk. Coba lagi.** and the **Coba lagi** action. |
 | Use **Coba lagi** | Start one fresh lookup for the retained code without retyping. Apply the same 10-second deadline and pending guard. |
 
 The grid shows separate loading, no-results, and error states, with a retry action for catalog

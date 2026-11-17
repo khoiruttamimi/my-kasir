@@ -1,25 +1,41 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition, type KeyboardEvent } from 'react';
 import { Button, Input, Pagination, Typography } from 'antd';
 import idID from 'antd/locale/id_ID';
 import { useQueryParams } from '@/hooks/use-query-params';
 import CartPanel from './components/cart-panel';
 import ProductGrid from './components/product-grid';
 import { useCashierCart } from './hooks/use-cashier-cart';
-import { useCashierProducts, type CashierProduct } from './hooks/use-cashier-products';
+import {
+  ScanLookupTimeout,
+  useCashierCodeLookup,
+  useCashierProducts,
+  type CashierProduct,
+} from './hooks/use-cashier-products';
 import styles from './styles.module.scss';
 
 const PAGE_SIZE = 24;
 const SEARCH_DELAY_MS = 200;
 
+const scanMessages = {
+  pending: 'Sedang mencari kode. Pindai ulang kode yang dipindai saat pencarian berlangsung.',
+  missing: 'Kode produk tidak ditemukan',
+  timeout: 'Pencarian kode melebihi batas waktu. Coba lagi.',
+  network: 'Gagal mencari kode produk. Periksa koneksi dan coba lagi.',
+  failure: 'Gagal mencari kode produk. Coba lagi.',
+};
+
 export default function CashierContainer() {
   const [search, setSearch] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
   const [lastAdded, setLastAdded] = useState('');
+  const [scanStatus, setScanStatus] = useState<keyof typeof scanMessages | null>(null);
+  const scanRequest = useRef<AbortController | null>(null);
   const [pagePending, startPageTransition] = useTransition();
   const { getParam, setParams } = useQueryParams();
   const { addProduct, ...cart } = useCashierCart();
+  const lookupCode = useCashierCodeLookup();
   const term = search.trim();
   const requestedPage = Number(getParam('page'));
   const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
@@ -28,6 +44,15 @@ export default function CashierContainer() {
     const timer = setTimeout(() => setDebouncedTerm(term), SEARCH_DELAY_MS);
     return () => clearTimeout(timer);
   }, [term]);
+
+  useEffect(
+    () => () => {
+      const request = scanRequest.current;
+      scanRequest.current = null;
+      request?.abort();
+    },
+    [],
+  );
 
   const changingQuery = term !== debouncedTerm || pagePending;
   const { data, isPending, isError, isFetching, refetch } = useCashierProducts(
@@ -42,7 +67,9 @@ export default function CashierContainer() {
   }
 
   function changeSearch(value: string) {
+    if (scanRequest.current) return;
     setSearch(value);
+    setScanStatus(null);
     if (value.trim() !== term && (getParam('page') !== null || pagePending)) {
       changePage(1);
     }
@@ -52,6 +79,44 @@ export default function CashierContainer() {
     addProduct(product);
     setLastAdded(product.name);
   }
+
+  async function submitScan(value: string) {
+    const code = value.trim();
+    if (!code || scanRequest.current) return;
+
+    const controller = new AbortController();
+    scanRequest.current = controller;
+    setLastAdded('');
+    setScanStatus('pending');
+    try {
+      const product = await lookupCode(code, controller);
+      if (scanRequest.current !== controller || controller.signal.aborted) return;
+      if (!product) {
+        setScanStatus('missing');
+        return;
+      }
+
+      selectProduct(product);
+      setSearch('');
+      setScanStatus(null);
+      if (getParam('page') !== null || pagePending) changePage(1);
+    } catch (error) {
+      if (scanRequest.current !== controller) return;
+      if (error instanceof ScanLookupTimeout) setScanStatus('timeout');
+      else if (error instanceof TypeError) setScanStatus('network');
+      else setScanStatus('failure');
+    } finally {
+      if (scanRequest.current === controller) scanRequest.current = null;
+    }
+  }
+
+  function handleScanKey(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter' || event.repeat || event.nativeEvent.isComposing) return;
+    event.preventDefault();
+    void submitScan(event.currentTarget.value);
+  }
+
+  const canRetry = scanStatus === 'timeout' || scanStatus === 'network' || scanStatus === 'failure';
 
   return (
     <section className={styles.cashier} lang="id" aria-labelledby="cashier-title">
@@ -63,10 +128,21 @@ export default function CashierContainer() {
       </div>
       <div className={styles.search}>
         <label htmlFor="cashier-search">Cari nama atau kode produk</label>
-        <Input id="cashier-search" value={search} onChange={(event) => changeSearch(event.target.value)} />
+        <Input
+          id="cashier-search"
+          value={search}
+          readOnly={scanStatus === 'pending'}
+          onChange={(event) => changeSearch(event.target.value)}
+          onKeyDown={handleScanKey}
+        />
       </div>
       <div role="status" className={styles.feedback}>
-        {lastAdded && `${lastAdded} ditambahkan.`}
+        {scanStatus ? scanMessages[scanStatus] : lastAdded && `${lastAdded} ditambahkan.`}
+        {canRetry && (
+          <Button type="link" onClick={() => void submitScan(search)}>
+            Coba lagi
+          </Button>
+        )}
       </div>
       <ProductGrid
         products={data?.products}

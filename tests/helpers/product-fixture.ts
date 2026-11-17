@@ -25,6 +25,7 @@ export function setup(options: SetupOptions = {}) {
     updates: 0,
     generated: 0,
     lookup: [] as { code: string; excludeId?: string }[],
+    activeLookups: [] as string[],
     lists: [] as import('@/server/repositories/product.repository').FindProductsParams[],
   };
   const repository = {
@@ -40,6 +41,10 @@ export function setup(options: SetupOptions = {}) {
       return { data, pagination: { page, limit, total: data.length, totalPages: Math.ceil(data.length / limit) } };
     },
     findProductById: async (productId: string) => records.find((row) => row.id === productId && !row.deletedAt) ?? null,
+    findActiveProductByCode: async (code: string) => {
+      calls.activeLookups.push(code);
+      return records.find((row) => !row.deletedAt && row.code?.toLowerCase() === code.toLowerCase()) ?? null;
+    },
     findProductByCode: async (code: string, excludeId?: string) => {
       calls.lookup.push({ code, excludeId });
       return records.find((row) => row.id !== excludeId && row.code?.toLowerCase() === code.toLowerCase()) ?? null;

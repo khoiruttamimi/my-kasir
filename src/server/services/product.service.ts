@@ -4,6 +4,7 @@ import { ApiError } from '@/utils/api';
 import type { CreateProductPayload } from '@/models/product';
 import {
   deleteProductById,
+  findActiveProductByCode,
   findProductById,
   findProductByCode,
   findProducts,
@@ -22,6 +23,14 @@ export interface GetProductsParams {
 
 export async function getProducts({ page = 1, limit = 10, search = '', searchMode }: GetProductsParams = {}) {
   if (searchMode === undefined) return findProducts({ page, limit, search });
+  if (searchMode === 'exact-code') {
+    const code = search.trim();
+    if (!code) throw new ApiError('search must be a nonblank product code', 400);
+
+    const product = await findActiveProductByCode(code);
+    const data = product ? [product] : [];
+    return { data, pagination: { page: 1, limit: 1, total: data.length, totalPages: data.length } };
+  }
   if (searchMode !== 'name-or-code') throw new ApiError('Unsupported search mode', 400);
   if (!Number.isSafeInteger(page) || page < 1) throw new ApiError('page must be a positive integer', 400);
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) {

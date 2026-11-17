@@ -81,6 +81,16 @@ export async function findProductByCode(code: string, excludeId?: string) {
   return product ?? null;
 }
 
+export async function findActiveProductByCode(code: string) {
+  const [product] = await db
+    .select()
+    .from(products)
+    .where(and(isNull(products.deletedAt), eq(sql`lower(${products.code})`, code.toLowerCase())))
+    .limit(1);
+
+  return product ?? null;
+}
+
 export type CreateProductInput = CreateProductPayload;
 
 export async function nextProductCodeValue(): Promise<string | null> {

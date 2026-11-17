@@ -137,3 +137,43 @@ test('cashier browse and search keep active rows, bind literal patterns, and pag
   expect(filters[4].params).toEqual([`%${search.trim()}%`]);
   expect(orders[2]).toEqual(['"products"."created_at" desc']);
 });
+
+test('exact cashier lookup binds a lowercased code to the indexed expression and excludes deleted rows', async () => {
+  const dialect = new PgDialect();
+  const schema = loadSource<typeof import('@/server/db/schema')>('src/server/db/schema.ts');
+  const product = { id, code: '00AbC' };
+  const filters: ReturnType<typeof dialect.sqlToQuery>[] = [];
+  const limits: number[] = [];
+  let rows = [product];
+  const repository = loadSource<typeof import('@/server/repositories/product.repository')>(
+    'src/server/repositories/product.repository.ts',
+    {
+      'server-only': {},
+      '@/server/db/schema': schema,
+      '@/server/db': {
+        db: {
+          select: () => ({
+            from: () => ({
+              where(predicate: import('drizzle-orm').SQL) {
+                filters.push(dialect.sqlToQuery(predicate));
+                return {
+                  limit: async (limit: number) => {
+                    limits.push(limit);
+                    return rows;
+                  },
+                };
+              },
+            }),
+          }),
+        },
+      },
+    },
+  );
+
+  expect(await repository.findActiveProductByCode('00ABC')).toEqual(product);
+  rows = [];
+  expect(await repository.findActiveProductByCode('00AB')).toBeNull();
+  expect(limits).toEqual([1, 1]);
+  expect(filters[0].sql).toMatch(/"deleted_at" is null.*lower\("products"\."code"\) = \$1/i);
+  expect(filters.map(({ params }) => params)).toEqual([['00abc'], ['00ab']]);
+});

@@ -2,7 +2,10 @@ import type { Product, CreateProductPayload, UpdateProductPayload } from '@/mode
 import { BaseParams, BaseResponse } from '@/types/base';
 import { fetcher } from '@/utils/api';
 
-export function getProducts(params: BaseParams & { searchMode?: 'name-or-code' }): Promise<BaseResponse<Product[]>> {
+export function getProducts(
+  params: BaseParams & { searchMode?: 'name-or-code' | 'exact-code' },
+  init?: RequestInit,
+): Promise<BaseResponse<Product[]>> {
   const searchParams = new URLSearchParams();
 
   if (params.page) {
@@ -21,7 +24,7 @@ export function getProducts(params: BaseParams & { searchMode?: 'name-or-code' }
     searchParams.set('searchMode', params.searchMode);
   }
 
-  return fetcher(`/api/products?${searchParams.toString()}`);
+  return fetcher(`/api/products?${searchParams.toString()}`, init);
 }
 
 export const createProduct = (payload: CreateProductPayload): Promise<Product> => {
